@@ -34,7 +34,7 @@ The analysis was conducted on a 16-inch MacBook Pro with an M3 Max chip. To ensu
 \section*{Puzzle Scraper}\addcontentsline{toc}{section}{Puzzle Scraper}
 
 In an initial step, we sourced puzzles from the official website. We used the following URL: \href{https://www.str8ts.com/Print_Daily_Str8ts.aspx?solution=please&lang=en&day=12/07/2025}{www.str8ts.com/Print\_Daily\_Str8ts.aspx?solution=please\&lang=en\&day=01/07/2025}.
-By adjusting the \textit{day} parameter, we can access puzzles dating back to 24/11/2008. This totals 6,064 puzzles as of 01/07/2025, the time of writing this paper. To automate retrieval, we implemented a web scraper. Its main entry point is the function $getPuzzleDataFrom$ in the $PuzzleScraper$ module. See \ref{eq:puzzle-scraper} for its specification or \href{https://github.com/e11720061/a-simple-str8ts-solver/blob/main/project/src/PuzzleScraper.hs}{/project/src/PuzzleScraper.hs} for the entire source code.
+By adjusting the \textit{day} parameter, we can access puzzles dating back to 24/11/2008. This totals 6,064 puzzles as of 01/07/2025, the time of writing this thesis. To automate retrieval, we implemented a web scraper. Its main entry point is the function $getPuzzleDataFrom$ in the $PuzzleScraper$ module. See \ref{eq:puzzle-scraper} for its specification or \href{https://github.com/e11720061/a-simple-str8ts-solver/blob/main/project/src/PuzzleScraper.hs}{/project/src/PuzzleScraper.hs} for the entire source code.
 
 \begin{equation}\label{eq:puzzle-scraper}
     \begin{array}{lcl}
