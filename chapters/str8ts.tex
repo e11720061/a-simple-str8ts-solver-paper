@@ -9,7 +9,7 @@
 
 Imagine mixing Sudoku, Crosswords, and Poker...
 
-The result would probably be Str8ts, a logic-based number placement puzzle. It resembles Sudoku in terms of complexity and Crosswords in terms of looks. On top, its name is a reference to Poker. Here, the term \textit{straight} denotes a hand containing cards in sequential order, but not all from the same suit. An adapted version of this rule is essential to the game of Str8ts and follows us throughout this paper~\cite{krieger2006rules}.
+The result would probably be Str8ts, a logic-based number placement puzzle. It resembles Sudoku in terms of game play and Crosswords in terms of looks. On top, its name is a reference to Poker. Here, the term \textit{straight} denotes a hand containing cards in sequential order, but not all from the same suit. An adapted version of this rule is essential to the game of Str8ts and follows us throughout this paper~\cite{krieger2006rules}.
 
 The official website is \href{https://www.str8ts.com/}{www.str8ts.com}. Apart from puzzles that are published daily, the site also offers other resources. These include a list of solving strategies, an interactive solver, the solutions themselves, and a forum where users can share their experiences and provide feedback. All puzzles included in this paper, such as the one in Figure \ref{fig:grid-smiley}, are taken from here.
 
@@ -93,4 +93,4 @@ We can also classify puzzles by difficulty level. There are 6 categories: Gentle
 
 \section*{Considerations}\addcontentsline{toc}{section}{Considerations}
 
-In theory, a Str8ts puzzle can have multiple solutions, a single solution, or none at all. However, the official website guarantees that all published puzzles have a unique solution that can be reached purely through logical reasoning, without the need for guessing. In this paper, we focus exclusively on the classical version of Str8ts, which is played on a $9 \times 9$ grid.
+In theory, a Str8ts puzzle can have multiple solutions, a single solution, or none at all. However, the official website guarantees that all published puzzles have a unique solution that can be reached purely through logical reasoning, without the need for guessing. In this paper, we focus on the classical version of Str8ts, which is played on a $9 \times 9$ grid. However, we will design the algorithm to adapt to different grid sizes by adjusting a single parameter.
