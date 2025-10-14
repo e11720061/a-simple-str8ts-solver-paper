@@ -1,6 +1,6 @@
 \chapter{Introduction}
 
-In \textit{Why Functional Programming Matters}, Hughes offers a clear definition of functional programming~\cite{hughes1989functional}:
+Anyone working in this field is likely familiar with \textit{Why Functional Programming Matters} by Hughes. As of October 2025, it has been cited 1,597 times and has inspired later works that echo its title, such as “How Functional Programming Mattered” and “Why Functional Programming Really Matters.” It defines functional programming as follows~\cite{hu2015functional, bailes2003functional, hughes1989functional}:
 
 \begin{quote}
     Functional programming is so called because its fundamental operation is the application of functions to arguments. A main program itself is written as a function that receives the program’s input as its argument and delivers the program’s output as its result. Typically, the main function is defined in terms of other functions, which in turn are defined in terms of still more functions, until, at the bottom level, the functions are language primitives.
@@ -22,7 +22,7 @@ Equations~\ref{eq:id} and~\ref{eq:map} illustrate such language primitives in Ha
     \end{array}
 \end{equation}
 
-Functional programming follows a declarative style. In contrast to an imperative style, the focus is on describing what a program does rather than how it does it. Take \ref{eq:fibonacci-implementation} as an example. It shows how easy it is to define the function $fibonacci$ in Haskell. It is basically equal to its mathematical definition, \ref{eq:fibonacci-definition}. There is no need to specify the flow of control. The program simply knows what to do~\cite{nikolaeva2024survey, van2009programming, scott2014origin}.
+One reason code is more concise in functional programming is its use of a declarative style. In contrast to an imperative style, the focus is on describing what a program does rather than how it does it. Take \ref{eq:fibonacci-implementation} as an example. It shows how easy it is to define the function $fibonacci$ in Haskell. It is basically equal to its mathematical definition, \ref{eq:fibonacci-definition}. There is no need to specify the flow of control. The program simply knows what to do~\cite{nikolaeva2024survey, van2009programming, scott2014origin}.
 
 \begin{equation}\label{eq:fibonacci-implementation}
     \begin{array}{lcl}
@@ -41,7 +41,7 @@ Functional programming follows a declarative style. In contrast to an imperative
     \end{array}
 \end{equation}
 
-A function does nothing more than compute its result. There is no state, there are no side effects. This is why we can use its left and right sides, function call and result, interchangeably. We call this property \textit{referential transparency}. It makes it possible to reason about functions just like we know from mathematics. We refer to this as \textit{equational reasoning}~\cite{hughes1989functional, wadler1992essence}.
+A function does nothing more than compute its result. There is no state and there are no side effects. This is why we can use its left and right sides, function call and result, interchangeably. We call this property \textit{referential transparency}. It makes it possible to reason about functions just like we know from mathematics. We refer to this as \textit{equational reasoning}~\cite{hughes1989functional, wadler1992essence}.
 
 Equational reasoning can be used for various purposes. Let's take a look at \ref{eq:fibonacci-2}. Here, we use it to prove that $fibonacci~2$ equals 1. This example also gives a glimpse into the notation we use throughout the thesis. In general, we write functions similar to as we would in Haskell. On top, the text in curly brackets between transformation steps provides information on the applied theorems~\cite{o2007discrete}.
 
