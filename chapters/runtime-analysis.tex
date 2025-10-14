@@ -1,0 +1,217 @@
+\chapter{Run-Time Analysis}\label{chap:runtime-analysis}
+
+We conducted a run-time analysis to evaluate $advancedSolve$. Initially, we planned to compare it with $simpleSolve$ and other GitHub algorithms. However, $simpleSolve$ failed to produce results within a 60-second timeout and the GitHub results, as discussed in \nameref{chap:related-work}, were inadequate. We therefore focus solely on $advancedSolve$. The analysis was automated using a Haskell program. Source code and results are available in the GitHub repository at \href{https://github.com/e11720061/a-simple-str8ts-solver/tree/main/project}{/project} and \href{https://github.com/e11720061/a-simple-str8ts-solver/tree/main/runtime-analysis}{/runtime-analysis}, respectively.
+
+\section*{Machine}\addcontentsline{toc}{section}{Machine}
+
+The analysis was conducted on a 16-inch MacBook Pro with an M3 Max chip. To ensure accurate measurements, all non-essential applications were closed during execution. Full software and hardware specifications are listed in Table~\ref{tab:macbook-software} and Table~\ref{tab:macbook-hardware}.
+
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{l|l}
+        Software Property & Value \\\hline
+        System Version & macOS 14.1 \\
+        Kernel Version & Darwin 23.1.0 \\
+    \end{tabular}
+    \caption{Software Properties}
+    \label{tab:macbook-software}
+\end{table}
+
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{l|l}
+        Hardware Property & Value \\\hline
+        Chip & Apple M3 Max \\
+        Number of Cores & 14 \\
+        Memory & 36 GB \\
+    \end{tabular}
+    \caption{Hardware Properties}
+    \label{tab:macbook-hardware}
+\end{table}
+
+\newpage
+
+\section*{Puzzle Scraper}\addcontentsline{toc}{section}{Puzzle Scraper}
+
+In an initial step, we sourced puzzles from the official website. We used the following URL: \href{https://www.str8ts.com/Print_Daily_Str8ts.aspx?solution=please&lang=en&day=12/07/2025}{www.str8ts.com/Print\_Daily\_Str8ts.aspx?solution=please\&lang=en\&day=01/07/2025}.
+By adjusting the \textit{day} parameter, we can access puzzles dating back to 24/11/2008. This totals 6,064 puzzles as of 01/07/2025, the time of writing this paper. To automate retrieval, we implemented a web scraper. Its main entry point is the function $getPuzzleDataFrom$ in the $PuzzleScraper$ module. See \ref{eq:puzzle-scraper} for its specification or \href{https://github.com/e11720061/a-simple-str8ts-solver/blob/main/project/src/PuzzleScraper.hs}{/project/src/PuzzleScraper.hs} for the entire source code.
+
+\begin{equation}\label{eq:puzzle-scraper}
+    \begin{array}{lcl}
+        getPuzzleDataFrom & :: & Date \rightarrow IO~(Maybe~PuzzleData)
+    \end{array}
+\end{equation}
+
+$getPuzzleDataFrom$ gets an input of type $Date$. \ref{eq:puzzle-scraper-type} shows that this is simply a $String$. However, it has to be in format $DD/MM/YYYY$. With this input, $getPuzzleDataFrom$ then builds the corresponding URL to the puzzle and returns an output of type $PuzzleData$. This type is a quadruple. It contains, again, the date, the difficulty of the puzzle, its grid, and its solution.
+
+\begin{equation}\label{eq:puzzle-scraper-type}
+    \begin{array}{l}
+        \textbf{type}~Date~=~String\\
+        \textbf{type}~PuzzleData~=~(Date,~Difficulty,~Grid,~Solution)\\
+        \textbf{type}~Difficulty~=~String\\
+        \textbf{type}~Solution~=~Grid
+    \end{array}
+\end{equation}
+
+\section*{Method}\addcontentsline{toc}{section}{Method}
+
+We limited our input on puzzles published between 01/01/2023 and 31/12/2023. We applied $advancedSolve$ on each puzzle and measured the time it needed to solve it. However, we had a 60-second timeout. For each puzzle, we recorded the information listed in Table \ref{eq:runtime-method}. If a puzzle could not be solved, the fields for Number of Solutions, Match with Official Solution, and Run-Time were left blank. For a detailed description of each field, see Table~\ref{tab:runtime-analysis-information-types}. For an example, see Table~\ref{tab:runtime-analysis-information-example}.
+
+\begin{table}[!h]\label{eq:runtime-method}
+    \centering
+    \begin{tabular}{l|l}
+        Data Point & Data Type \\ \hline
+        Date & \([\text{01-01-2024},\text{31.12.2024}]\) \\
+        Difficulty & \(\{\text{Gentle},\text{Moderate},\text{Tough},\text{Diabolical}\}\) \\
+        Number of Solutions & \([1,\infty)\) \\
+        Equal to Official Solution & \(\{\text{True},\text{False}\}\) \\
+        Run-Time in Nanoseconds & \((0,60*10^9]\) \\
+        Number of Black Squares & \([1,81]\) \\
+        Number of Blank Squares & \([1,81]\) \\
+        Symmetrical & \(\{\text{True},\text{False}\}\) \\
+    \end{tabular}
+    \caption{Explanation of collected information}
+    \label{tab:runtime-analysis-information-types}
+\end{table}
+
+\begin{table}[!h]\label{eq:runtime-method}
+    \centering
+    \begin{tabular}{l|l}
+        Data Point & Data Type \\ \hline
+        Date & \([\text{01-01-2024},\text{31.12.2024}]\) \\
+        Difficulty & \(\{\text{Gentle},\text{Moderate},\text{Tough},\text{Diabolical}\}\) \\
+        Number of Solutions & \([1,\infty)\) \\
+        Equal to Official Solution & \(\{\text{True},\text{False}\}\) \\
+        Run-Time in Nanoseconds & \((0,60*10^9]\) \\
+        Number of Black Squares & \([1,81]\) \\
+        Number of Blank Squares & \([1,81]\) \\
+        Symmetrical & \(\{\text{True},\text{False}\}\) \\
+    \end{tabular}
+    \caption{Explanation of collected information}
+    \label{tab:runtime-analysis-information-types}
+\end{table}
+
+\section*{Selected Data}\addcontentsline{toc}{section}{Selected Data}
+
+For this analysis, we limited our input to puzzles published between 01/01/2023 and 31/12/2023. Our data contains a total of 31 puzzles. The first was published on 01/01/2023, the most recent one on 31/01/2023.  Of these, the difficulties \textit{Moderate}, \textit{Tough}, and \textit{Diabolical} appear 91 times and make up 24.9\% each. The difficulty \textit{Gentle} appears 92 times, slightly more, and makes up 25.2\%.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics{graphics/runtimes-difficulties.pdf}
+    \caption{Count of puzzles}
+    \label{fig:runtime-difficulties}
+\end{figure}
+
+
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{l|rr}
+        Difficulty & Absolute & Relative \\\hline
+        Gentle & 92 & 25.21\% \\
+        Moderate & 91 & 24.93\% \\
+        Tough & 91 & 24.93\% \\
+        Diabolical & 91 & 24.93\% \\\hline\hline
+        Grand Total & 365 & 100.00\%
+    \end{tabular}
+    \caption{Count of puzzles}
+    \label{tab:runtimes-difficulties}
+\end{table}
+
+\newpage
+
+The average number of blank cells across all puzzles is 48,52 or X percent with a minimum of 39 and a maximum of 59. The puzzle with the minimum number of blank cells is one of difficulty gentle, while the one with the maximum is one of Diabolical. The number of blank cell seems to increase with rising difficulty. Hence, we think that the number of blank cells might be a good indicator of difficulty level. The same might also be true for black cells. So, the less black cells, the more difficult the puzzle.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics{graphics/runtimes-blanks.pdf}
+    \caption{Count of blank squares}
+    \label{fig:runtime-blanks}
+\end{figure}
+
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{l|rrr}
+        Difficulty & Minimum & Average & Maximum \\\hline
+        Gentle & 36 & 42.49 & 48 \\
+        Moderate & 42 & 45.86 & 50 \\
+        Tough & 48 & 51.92 & 57 \\
+        Diabolical & 51 & 54.60 & 60 \\\hline\hline
+        Grand Total & 36 & 48.70 & 60
+    \end{tabular}
+    \caption{Hardware Properties}
+    \label{tab:macbook-hardware}
+\end{table}
+
+\section*{Results}\addcontentsline{toc}{section}{Results}
+
+The overall runtime was X. The minimum runtime was X for a puzzle of difficulty Gentle and the maximum X for a puzzle with difficulty Diabolical. The algorithm takes 5 times longer for Gentle to Moderate, 10 times for Moderate to Difficult, and 100 times longer for Difficult to Diabolical. So, there seems to be an exponential growth of runtime with increasing difficulty level. As expected, as the problem is NP complete.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics{graphics/runtimes-by-difficulty.pdf}
+    \caption{Run-times (without outliers)}
+    \label{fig:runtimes-by-difficulty}
+\end{figure}
+
+\newpage
+
+
+
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{l|rrr}
+        Difficulty & Minimum (ms) & Average (ms) & Maximum (ms) \\\hline
+        Gentle & 3501 & 12.39 & 69757.00 \\
+        Moderate & 5259 & 24.02 & 318948.00 \\
+        Tough & 19784 & 509090.74 & 14359.28 \\
+        Diabolical & 27689 & 1476.22 & 14321.71 \\\hline\hline
+        Grand Total & 3501 & 504079.75 & 14359.28
+    \end{tabular}
+    \caption{Run-times}
+    \label{tab:macbook-hardware}
+\end{table}
+
+The average number of blank cells across all puzzles is 48,52 or X percent with a minimum of 39 and a maximum of 59. The puzzle with the minimum number of blank cells is one of difficulty gentle, while the one with the maximum is one of Diabolical. The number of blank cell seems to increase with rising difficulty. Hence, we think that the number of blank cells might be a good indicator of difficulty level. The same might also be true for black cells. So, the less black cells, the more difficult the puzzle.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics{graphics/runtimes-by-blanks.pdf}
+    \caption{Average run-times by blank squares}
+    \label{fig:runtimes-by-blanks}
+\end{figure}
+
+\newpage
+
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{rr}
+        Blanks & Average (ms) \\\hline
+        36 & 6.53 \\
+        37 & 6.01 \\
+        38 & 6.14 \\
+        39 & 7.08 \\
+        40 & 7.86 \\
+        41 & 6.85 \\
+        42 & 11.63 \\
+        43 & 16.89 \\
+        44 & 25.24 \\
+        45 & 22.91 \\
+        46 & 23.09 \\
+        47 & 14.75 \\
+        48 & 41.37 \\
+        49 & 111.59 \\
+        50 & 430.28 \\
+        51 & 397.75 \\
+        52 & 445.34 \\
+        53 & 918.84 \\
+        54 & 621.25 \\
+        55 & 1876.16 \\
+        56 & 1876.84 \\
+        57 & 1729.40 \\
+        58 & 2198.59 \\
+        59 & 1190.80 \\
+        60 & 4787.75 \\
+    \end{tabular}
+    \caption{Average run-times by blank squares}
+    \label{tab:runtimes-by-blanks}
+\end{table}

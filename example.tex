@@ -3,15 +3,15 @@
 \documentclass[draft,final]{vutinfth} % Remove option 'final' to obtain debug information.
 
 % Define convenience functions to use the author name and the thesis title in the PDF document properties.
-\newcommand{\authorname}{Forename Surname} % The author name without titles.
-\newcommand{\thesistitle}{Title of the Thesis} % The title of the thesis. The English version should be used, if it exists.
+\newcommand{\authorname}{Linda Arab} % The author name without titles.
+\newcommand{\thesistitle}{A Simple Str8ts Solver} % The title of the thesis. The English version should be used, if it exists.
 
 % Create the XMP metadata file for the creation of PDF/A compatible documents.
 \begin{filecontents*}[overwrite]{\jobname.xmpdata}
 \Author{\authorname}                                    % The author's name in the document properties.
 \Title{\thesistitle}                                    % The document's title in the document properties.
-\Language{de-AT}                                        % The document's language in the document properties. Select 'en-US', 'en-GB', or 'de-AT'.
-\Keywords{a\sep list\sep of\sep keywords}               % The document's keywords in the document properties (separated by '\sep ').
+\Language{en-GB}                                        % The document's language in the document properties. Select 'en-US', 'en-GB', or 'de-AT'.
+\Keywords{functional programming\sep equational reasoning\sep algorithm design\sep haskell\sep str8ts solver}               % The document's keywords in the document properties (separated by '\sep ').
 \Publisher{TU Wien}                                     % The document's publisher in the document properties.
 \Subject{Thesis}                                        % The document's subject in the document properties.
 \end{filecontents*}
@@ -38,6 +38,20 @@
 \usepackage[a-2b,mathxmp]{pdfx}      % Enables PDF/A compliance. Loads the package hyperref and has to be included second to last.
 \usepackage[acronym,toc]{glossaries} % Enables the generation of glossaries and lists of acronyms. This package has to be included last.
 
+% Additional packages
+\usepackage{nameref}
+\usepackage{minted}
+\usepackage{xcolor} % to access the named colour LightGray
+\definecolor{LightGray}{gray}{0.9}
+\newminted[mintedhaskell]{haskell}{
+  frame=lines,
+  framesep=2mm,
+  baselinestretch=1.2,
+  bgcolor=LightGray,
+  fontsize=\footnotesize,
+  linenos
+}
+
 % Set PDF document properties
 \hypersetup{
     pdfpagelayout   = TwoPageRight,           % How the document is shown in PDF viewers (optional).
@@ -57,26 +71,26 @@
 % Set persons with 4 arguments:
 %  {title before name}{name}{title after name}{gender}
 %  where both titles are optional (i.e. can be given as empty brackets {}).
-\setauthor{Pretitle}{\authorname}{Posttitle}{female}
-\setadvisor{Pretitle}{Forename Surname}{Posttitle}{male}
+\setauthor{}{\authorname}{}{female}
+\setadvisor{Univ.Prof. Dipl.-Inf. Dr.rer.nat.}{Jens Knoop}{}{male}
 
 % For bachelor and master theses:
-\setfirstassistant{Pretitle}{Forename Surname}{Posttitle}{male}
-\setsecondassistant{Pretitle}{Forename Surname}{Posttitle}{male}
-\setthirdassistant{Pretitle}{Forename Surname}{Posttitle}{male}
+% \setfirstassistant{Pretitle}{Forename Surname}{Posttitle}{male}
+% \setsecondassistant{Pretitle}{Forename Surname}{Posttitle}{male}
+% \setthirdassistant{Pretitle}{Forename Surname}{Posttitle}{male}
 
 % For dissertations:
-\setfirstreviewer{Pretitle}{Forename Surname}{Posttitle}{male}
-\setsecondreviewer{Pretitle}{Forename Surname}{Posttitle}{male}
+% \setfirstreviewer{Pretitle}{Forename Surname}{Posttitle}{male}
+% \setsecondreviewer{Pretitle}{Forename Surname}{Posttitle}{male}
 
 % For dissertations at the PhD School and optionally for dissertations:
-\setsecondadvisor{Pretitle}{Forename Surname}{Posttitle}{male} % Comment to remove.
+% \setsecondadvisor{Pretitle}{Forename Surname}{Posttitle}{male} % Comment to remove.
 
 % Required data.
-\setregnumber{0123456}
-\setdate{01}{01}{2001} % Set date with 3 arguments: {day}{month}{year}.
-\settitle{\thesistitle}{Titel der Arbeit} % Sets English and German version of the title (both can be English or German). If your title contains commas, enclose it with additional curvy brackets (i.e., {{your title}}) or define it as a macro as done with \thesistitle.
-\setsubtitle{Optional Subtitle of the Thesis}{Optionaler Untertitel der Arbeit} % Sets English and German version of the subtitle (both can be English or German).
+\setregnumber{11720061}
+\setdate{01}{07}{2025} % Set date with 3 arguments: {day}{month}{year}.
+\settitle{\thesistitle}{A Simple Str8ts Solver} % Sets English and German version of the title (both can be English or German). If your title contains commas, enclose it with additional curvy brackets (i.e., {{your title}}) or define it as a macro as done with \thesistitle.
+\setsubtitle{Algorithm Design Through Equational Reasoning}{Algorithm Design Through Equational Reasoning} % Sets English and German version of the subtitle (both can be English or German).
 
 % Select the thesis type: bachelor / master / doctor.
 % Bachelor:
@@ -104,25 +118,23 @@
 % The structure of the thesis has to conform to the guidelines at
 %  https://informatics.tuwien.ac.at/study-services
 
-\addtitlepage{naustrian} % German title page.
+% \addtitlepage{naustrian} % German title page.
 \addtitlepage{english} % English title page.
 \addstatementpage
 
-\begin{danksagung*}
-\todo{Ihr Text hier.}
-\end{danksagung*}
+% \begin{danksagung*}
+% \todo{Ihr Text hier.}
+% \end{danksagung*}
 
 \begin{acknowledgements*}
-\todo{Enter your text here.}
+A special thanks goes out to family for always pushing me to finish my studies. Soon, I will actually be able to wear the graduation hat you got me for 2022.
 \end{acknowledgements*}
 
-\begin{kurzfassung}
-\todo{Ihr Text hier.}
-\end{kurzfassung}
+% \begin{kurzfassung}
+% \todo{Ihr Text hier.}
+% \end{kurzfassung}
 
-\begin{abstract}
-\todo{Enter your text here.}
-\end{abstract}
+\input{chapters/abstract}
 
 % Select the language of the thesis, e.g., english or naustrian.
 \selectlanguage{english}
@@ -133,14 +145,20 @@
 % Switch to arabic numbering and start the enumeration of chapters in the table of content.
 \mainmatter
 
-\chapter{Introduction}
-\todo{Enter your text here.}
+\input{chapters/introduction}
+\input{chapters/related-work}
+\input{chapters/str8ts}
+\input{chapters/data-representation}
+\input{chapters/a-simple-solver}
+\input{chapters/an-advanced-solver}
+\input{chapters/runtime-analysis}
+\input{chapters/conclusion}
 
-\chapter{Additional Chapter}
-\todo{Enter your text here.}
+% \chapter{Additional Chapter}
+% \todo{Enter your text here.}
 
 % Remove following line for the final thesis.
-\input{intro.tex} % A short introduction to LaTeX.
+% \input{intro.tex} % A short introduction to LaTeX.
 
 \backmatter
 
@@ -172,7 +190,8 @@
 \printglossaries
 
 % Add a bibliography.
-\bibliographystyle{alpha}
-\bibliography{intro}
+\bibliographystyle{unsrt}
+% \bibliography{intro}
+\bibliography{references}
 
 \end{document}

@@ -1,0 +1,255 @@
+\chapter{A Simple Solver}\label{chap:a-simple-solver}
+
+We now define a clear and concise algorithm based on Bird’s approach. Some functions are reused with more descriptive names. At this stage, we are not concerned with performance or optimization.
+
+The main function is solve. It takes a Str8ts puzzle grid as input and generates all possible completions. These candidates are then filtered to keep only the valid solutions according to the puzzle’s rules. The algorithm handles cases with no solution, a unique solution, or multiple solutions. If the input grid is invalid — for example, if a row contains duplicate values —
+solve returns an empty list. Otherwise, it returns a list of all valid solutions.
+
+Thanks to Haskell’s lazy evaluation, only the necessary parts of the result are computed. If only the first solution is needed, it can be obtained efficiently using the head function, without evaluating the entire list.
+
+\[
+\begin{array}{lcl}
+    solve & :: & Grid \rightarrow [Grid] \\
+    solve & = & filter~valid~.~completions
+\end{array} \\
+\]
+
+\section*{Choices}
+\addcontentsline{toc}{section}{Choices}
+
+We compute all possible completions in two steps. First, we need to replace each square with the choices we have for it. Then we can apply the matrix cartesian product.
+
+\[
+    \begin{array}{lcl}
+        completions & :: & Grid \rightarrow [Grid] \\
+        completions & = & mcp~.~choices
+    \end{array} \\
+\]
+
+\newpage
+
+We begin by introducing a new data type \(Choices\).
+
+\[
+    \begin{array}{lcl}
+        \textbf{type}~Choices & = & [Square] \\
+    \end{array} \\
+\]
+
+We know that each blank square needs to be filled with a number between 1 and 9. We call the set of these values \(candidates\).
+
+\[
+    \begin{array}{lcl}
+        candidates & :: & Choices \\
+        candidates & = & [Square~White~v~|~v~\leftarrow~[1~..~size]]
+    \end{array} \\
+\]
+
+Based on that, we define the function \(choices\).
+
+\[
+    \begin{array}{lcl}
+        choices & :: & Grid \rightarrow Matrix~Choices \\
+        choices & = & map~(map~choice)
+    \end{array}
+\]
+
+\[
+    \begin{array}{lcl}
+        choice & :: & Square \rightarrow Choices \\
+        choice & = & \textbf{if}~blank~s~\textbf{then}~candidates~\textbf{else}~[s]
+    \end{array}
+\]
+
+The matrix cartesian product is given by
+
+\[
+    \begin{array}{lcl}
+        mcp & :: & Matrix~[a] \rightarrow [Matrix ~ a] \\
+        mcp & = & cp~.~map~cp
+    \end{array}
+\]
+
+\[
+    \begin{array}{lcl}
+        cp & :: & [[a]] \rightarrow [[a]] \\
+        cp ~ [] & = & [[]] \\
+        cp~(xs:xss) & = & [x:ys~|~x \leftarrow xs,~ys \leftarrow cp~xss]
+    \end{array}
+\]
+
+\section*{Validity}
+\addcontentsline{toc}{section}{Validity}
+
+Last but not least, comes the interesting part. We have to implement the function \(valid\). We assume that this function only takes completed grids as input. A matrix is valid if all rows and columns are valid.
+
+\[
+    \begin{array}{lcl}
+        valid & :: & Grid \rightarrow Bool \\
+        valid~g & = & all~validRow~(rows~g)~\land \\
+        & & all~validRow~(columns~g)
+    \end{array}
+\]
+
+A row or column, in turn, is valid if it meets two conditions. First, it does not contain any duplicates. Second, all compartments within form straights.
+
+\[
+    \begin{array}{lcl}
+        validRow & :: & Row ~ Square \rightarrow Bool \\
+        validRow~ss & = & condition1~ss~\land \\
+        & & condition2~ss
+    \end{array}
+\]
+
+\subsection*{Condition 1}
+\addcontentsline{toc}{subsection}{Condition 1}
+
+Let's implement \(condition1\). The only squares allowed to repeat across a row or column are black, empty ones. On top of that, we agree that two squares are duplicates when their values match, independent of their colour. The function \(condition1\) discards all black, empty cells and checks whether the values of the remaining squares repeat themselves. If not, it yields \(True\).
+
+\[
+    \begin{array}{lcl}
+        condition1 & :: & Row Square \rightarrow Bool \\
+        condition1~ss & = & noDuplicates~[value~s~|~s \leftarrow ss,\neg(black~s \land empty~s)]
+    \end{array}
+\]
+
+The implementation of noDuplicates is rather straightforward.
+
+\[
+    \begin{array}{lcl}
+        noDuplicates & :: & Eq~a \Rightarrow [a] \rightarrow Bool\\
+        noDuplicates~[] & = & True \\
+        noDuplicates~(x:xs) & = & all~(\neq x)~xs \land noDuplicates~xs\\
+    \end{array}
+\]
+
+\subsection*{Condition 2}
+\addcontentsline{toc}{subsection}{Condition 2}
+
+The second condition is that the values within all white compartments form straights.
+
+\[
+    \begin{array}{lcl}
+        condition2 & :: & Row ~ Square \rightarrow Bool\\
+        condition2 ~ ss & = & all ~ (straight ~ . ~ values) ~ . ~ whiteCompartments
+    \end{array}
+\]
+
+We can implement the function \(straight\) based on its definition. When the values are sorted in ascending order, there should not be any gaps between them. \(Data.List\) provides the function \(sort ~ :: ~ Ord a => [a] \rightarrow [a]\) that sorts in ascending order. Using this function, we can define \(straight\) as
+
+\[
+    \begin{array}{lcl}
+        straight & :: & [Int] \rightarrow Bool\\
+        straight & = & noGaps~.~sort
+    \end{array}
+\]
+
+If we have two values \(v_1\) and \(v_2\), a gap means \(|v_2-v_1|>1\). In words, that the gap between the two integer values is something other than 1. It's important to note that \(noGaps\) needs input lists in ascending order.
+
+\[
+    \begin{array}{lcl}
+        noGaps & :: & [Int] \rightarrow Bool\\
+        noGaps~[] & = & True \\
+        noGaps~[x] & = & True \\
+        noGaps~(x:xs) & = & x+1==head~xs \land noGaps~xs
+    \end{array}
+\]
+
+\section*{Improvements}
+\addcontentsline{toc}{section}{Improvements}
+
+As a reminder, \(validRow\) is defined as follows
+
+\[
+    \begin{array}{lcl}
+        validRow & :: & Row ~ Square \rightarrow Bool \\
+        validRow~ss & = & condition1~ss~\land condition2~ss
+    \end{array}
+\]
+
+In the following, we want to simplify \(validRow\). Right now, the function \(straight\) works in two steps. It sorts the values inside each white compartment by applying \(sort\) and then checks whether there are gaps through \(noGaps\). However, we argue that, in combination with \(condition1\), we can skip the sorting and checking for gaps, and simply check that the minimum and maximum value inside a compartment are less apart from each other than the size of the compartment itself. In mathematical terms, we want to prove
+
+\begin{equation*}
+    \begin{split}
+        &\quad validRow\\
+        =&\quad\quad\{\text{some text}\}\\
+        &\quad condition1 ~ ss \land condition2 ~ ss\\
+        =&\quad\quad\{\text{some text}\}\\
+        &\quad condition1 ~ ss \land all~(straight~.~values)~(whiteCompartments ~ ss)\\
+        =&\quad\quad\{\text{some text}\}\\
+        &\quad condition1 ~ ss \land all~(distanceOk~.~ values) ~(whiteCompartments ~ ss)
+    \end{split}
+\end{equation*}
+
+With \(distanceOk\) being defined as
+
+\[
+    \begin{array}{lcl}
+        distanceOk & :: & [Int] \rightarrow Bool\\
+        distanceOk~xs & = & maximum~xs - minimum~xs < length~xs~.
+    \end{array}
+\]
+
+We can then re-write \(condition2\) as
+
+\[
+    \begin{array}{lcl}
+        condition2 & :: & Row ~ Square \rightarrow Bool\\
+        condition2 ~ ss & = & all ~ (distanceOk ~ . ~ values) ~ . ~ whiteCompartments
+    \end{array}
+\]
+
+\newpage
+\subsection*{Proof}
+\addcontentsline{toc}{subsection}{Proof}
+
+What is left is to prove is the following transformation step.
+
+\begin{equation*}
+    \begin{split}
+        &\quad condition1 ~ ss \land all~(straight~.~values)~(whiteCompartments ~ ss)\\
+        =&\quad\quad\{\text{This needs to be proved}\}\\
+        &\quad condition1 ~ ss \land all~(distanceOk~.~ values) ~(whiteCompartments ~ ss)
+    \end{split}
+\end{equation*}
+
+To do this, we need two underlying theorems. \ref{a-simple-solver-theorem-straight} is an alternative definition for straight. In words, if \(x\) is a list of length \(n\) that does not contain duplicates and has its minimum and maximum be no further apart than \(n-1\), then \(x\) also forms a straight. The proof is left to the reader. But using this, we can re-define \(straight\) as follows.
+
+\begin{equation}\label{a-simple-solver-theorem-straight}
+    \begin{array}{c}
+        (i\neq j \Rightarrow x_i\neq x_j) \land (max_x-min_x=n-1) \Rightarrow x\text{ forms a straight}\\
+        x = \{x_1,\dots,x_n\}
+    \end{array}
+\end{equation}
+
+\begin{equation}\label{a-simple-solver-definition-straight}
+    \begin{array}{lcl}
+        straight & :: & [Int] \rightarrow Bool\\
+        straight ~ x & = & noDuplicates ~ x \land distanceOk ~ x
+    \end{array}
+\end{equation}
+
+\ref{a-simple-solver-theorem-duplicates} says that, whenever we have a list without duplicates, any subset of this list will not have duplicates, either. This is relevant because in \(condition2\), we already check that there are no duplicates across non-blank-black cells. Because white compartments are subsets of these, this check already includes them.
+
+\begin{equation}\label{a-simple-solver-theorem-duplicates}
+    \begin{array}{c}
+        (i\neq j \Rightarrow x_i\neq x_j) \Rightarrow (i\neq j \Rightarrow y_i\neq y_j)\\
+        X \supset Y, ~ x \in X, ~ y \in Y 
+    \end{array}
+\end{equation}
+
+Now, we are ready to prove.
+
+\begin{equation*}
+    \begin{split}
+        &\quad validRow\\
+        =&\quad\quad\{\text{definition}\}\\
+        &\quad condition1 ~ ss \land condition2 ~ ss\\
+        =&\quad\quad\{\text{definition}\}\\
+        &\quad condition1 ~ ss \land all~(straight~.~values)~(whiteCompartments ~ ss)\\
+        =&\quad\quad\{\text{some text}\}\\
+        &\quad condition1 ~ ss \land all~((\setminus x \rightarrow noDuplicates ~ x \land distanceOk ~ x)~.~ values) ~(\dots)\\
+        =&\quad\quad\{\text{some text}\}\\
+        &\quad condition1 ~ ss \land all~(distanceOk ~.~ values) ~(whiteCompartments ~ ss)
+    \end{split}
+\end{equation*}

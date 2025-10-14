@@ -1,0 +1,237 @@
+\chapter{An Advanced Solver}\label{chap:an-advanced-solver}
+
+We successfully developed a simple Str8ts solver. However, in its current form, the algorithm remains highly inefficient, even with lazy evaluation. It computes all possible completions of the board and then searches for the first valid solution. In \textit{A Simple Sudoku Solver}, Bird presents a series of transformations that evolve an inefficient solver into a more sophisticated one. Since Str8ts and Sudoku share many structural similarities, we can adapt these techniques and apply them to our problem domain.
+
+\section*{Pruning}
+\addcontentsline{toc}{section}{Pruning}
+
+Following Bird’s approach, the algorithm can be improved by incorporating pruning functionality, allowing invalid completions to be eliminated earlier in the process and significantly reducing run-time. This method also more closely reflects how humans approach puzzle solving.
+
+\subsection*{Transformation}
+\addcontentsline{toc}{subsection}{Transformation}
+
+We re-use the following transformation.
+\begin{equation}\label{an-advanced-solver-theorem-prune}
+    \begin{array}{rcl}
+        solve & = & filter~valid\cdot expand\cdot choices\\
+         & = & filter~valid\cdot expand\cdot prune\cdot choices
+    \end{array}
+\end{equation}
+With \(prune\) and \(pruneBy\) being defined as follows.
+\begin{equation*}
+    prune = pruneBy~cols \cdot pruneBy ~ rows
+\end{equation*}
+\begin{equation*}
+    \begin{array}{c}
+        pruneBy~f = f\cdot map~pruneRow\cdot f\text{,}\\
+        f \in \{rows,~columns\}
+    \end{array}
+\end{equation*}
+\newpage
+The following theorems need to be established for \ref{an-advanced-solver-theorem-prune} to be applicable. 
+\begin{align}
+    &filter~(p\cdot f) = map~f\cdot filter~p\cdot map~f\text{, when $f\cdot f = id$}\label{an-advanced-solver-prune-theorem-1}\\
+    &map~f\cdot expand = expand\cdot f,~f\in\{rows,~columns\}\label{an-advanced-solver-prune-theorem-2}\\
+    &filter~(all~p)\cdot cp = cp\cdot map~(filter~p)\label{an-advanced-solver-prune-theorem-3}\\
+    &filter~validRow\cdot cp = filter~validRow\cdot cp\cdot pruneRow\label{an-advanced-solver-prune-theorem-4}
+\end{align}
+
+\subsection*{Implementation}
+\addcontentsline{toc}{subsection}{Proof}
+We need to define \(pruneRow\). We can prune by \(condition1\) or \(condition2\). An element, \(element~::~Choices\), inside \(Matrix~Choices\) is considered fixed ifs length is 1. When pruning, it is helpful to focus on these fixed parts of the puzzle.
+\[
+    \begin{array}{lcl}
+        pruneRow & :: & Row~Choices \rightarrow Row~Choices
+    \end{array}
+\]
+\[
+    \begin{array}{lcl}
+        pruneRow & = & pruneByCondition1~.~pruneByCondition2
+    \end{array}
+\]
+\subsubsection*{\textit{pruneByCondition1}}
+\addcontentsline{toc}{subsubsection}{\textit{pruneByCondition1}}
+The function \(pruneByCondition1\) looks at all fixed choices in rows and columns and eliminates them from other entries in the same row or column.
+\[
+    \begin{array}{@{}l}
+        \begin{array}{@{}lcl}
+            pruneByCondition1 & :: & Row~Choices \rightarrow Row~Choices \\ pruneByCondition1~row & = & map~(remove~impossible)~row \\
+        \end{array} \\
+        \begin{array}{@{~~~~~~~~~~}r@{~}lcl}
+            where & impossible & = & filter~singleton~row \\
+        \end{array}
+    \end{array}
+\]
+\[
+    \begin{array}{lcl}
+        remove & :: & Choices \rightarrow Choices \rightarrow Choices \\
+        remove~\_~[~] & = & error\\
+        remove~[~]~ys & = & ys\\
+        remove~\_~[y] & = & [y]\\
+        remove~(x:xs)~ys & = & remove~xs~[y~|~y \leftarrow ys,~value~y \neq value~x]
+    \end{array}
+\]
+\subsubsection*{\textit{pruneByCondition2}}
+\addcontentsline{toc}{subsubsection}{\textit{pruneByCondition2}}
+The function \(pruneByCondition2\) looks at fixed choices within white compartments and how they clamp its range. However, before we start, we need to introduce a new accessor \(compartments'\) and \(isWhiteCompartment'\), because we are working with \(Matrix~Choices\), instead of \(Matrix~Square\).
+\[
+    \begin{array}{lcl}
+        compartments' & :: & Row~Choices \rightarrow [Compartment~Choices]\\
+        compartments' & = & groupBy ~ (\setminus x~y \rightarrow color~(head~x) == color~(head~y))
+    \end{array}
+\]
+\[
+    \begin{array}{lcl}
+        isWhiteCompartment' & :: & Compartment ~ Choices \rightarrow Bool\\
+        isWhiteCompartment' & = & white~.~head~.~head
+    \end{array}
+\]
+\newpage
+Then, the definition of \(pruneByCondition2\) is as follows.
+\[
+    \begin{array}{lcl}
+        pruneByCondition2 & :: & Row~Choices \rightarrow Row~Choices \\
+        pruneByCondition2 & = & concatMap~pruneCompByCondition2~.~compartments'
+    \end{array}
+\]
+\[
+    \begin{array}{l}
+        \begin{array}{l}
+        pruneCompByCondition2~::~ Compartment~Choices \rightarrow Compartment~Choices\\
+        pruneCompByCondition2~comp
+        \end{array}\\
+        \begin{array}{@{\quad\quad|~}lcl}
+            isWhiteCompartment'~comp & = & pruneWhiteCompByCondition2~comp\\
+            otherwise & = & comp\\
+        \end{array}\\
+    \end{array}
+\]
+\[
+    \begin{array}{l}
+        \begin{array}{l}
+        pruneWhiteCompByCondition2~::~Compartment~Choices \rightarrow Compartment~Choices\\
+        pruneWhiteCompByCondition2~comp\\
+        \end{array}\\
+        \begin{array}{@{\quad\quad|~}lcl}
+            not~(any~singleton~comp) & = & comp\\
+            otherwise & = & map~(remove~invalid)~comp\\
+        \end{array}\\
+        \begin{array}{@{\quad\quad\quad\quad}r@{~}lcl}
+            where & range & = & length~comp - 1\\
+            & max & = & minimum~fixed + range\\
+            & min & = & maximum~fixed - range\\
+            & invalid & = & [c~|~c \leftarrow candidates, value~c > max \lor value~c < min]\\
+        \end{array}
+    \end{array}
+\]
+
+\subsection*{Proof}
+\addcontentsline{toc}{subsection}{Proof}
+
+Proof for \ref{an-advanced-solver-prune-theorem-1} - \ref{an-advanced-solver-prune-theorem-3} are already provided by Bird himself. They hold true for us because we use the same definitions for sub-functions $rows$, $columns$, $expand$, and $cp$. Meaning, the only proof demanded from us is the one of \ref{an-advanced-solver-prune-theorem-4}. And this proof just tells us that \(filterValid\) on a pruned row yields the same results as applying it in does not change the validity.
+
+\section*{Single-Cell Expansion}
+\addcontentsline{toc}{section}{Single-Cell Expansion}
+
+Another improvement is to only expand the choices one step at a time. And only expand them were it seems the most promising. Meaning, if there is a square that can be filled with only two possible candidates, it would be better to expand this than, for example, a square with 6 candidates. Because then our search tree grows slower.
+
+\subsection*{Transformation}
+\addcontentsline{toc}{subsection}{Transformation}
+
+We want to apply one last transformation to $solve$. Namely,
+\begin{equation*}
+    \begin{split}
+        solve\quad = &\quad search\cdot choices\\
+        search~m\quad&\\
+        | &\quad not~(safe~m) =\quad[~]\\
+        | &\quad complete~m' =\quad[~map~(map~head) ~m'~]\\
+        | &\quad\textbf{otherwise} =\quad concat~(map~search~(expand1~m')
+    \end{split}
+\end{equation*}
+$expand1$ is defined as
+\[
+    \begin{array}{l}
+        \begin{array}{lcl}
+        expand1 & :: & Matrix~[a] \rightarrow [Matrix~[a]]\\
+        expand1~m & = & [rows1 \mathbin{+\!\!+} [row1 \mathbin{+\!\!+} [c]:~row2] \mathbin{+\!\!+} rows2~|~c \leftarrow cs]\\
+        \end{array}\\
+        \begin{array}{@{\quad\quad}r@{~}lcl}
+            where & (rows1,~row:rows2) & = & break~(any~smallest)~m\\
+            & (row1,~cs:row2) & = & break~smallest~row\\
+            & smallest~x & = & length~x == n\\
+            & n & = & minimum~(counts~m)\\
+            & counts & = & filter~(>1)~.~map~length~.~concat
+        \end{array}
+    \end{array}
+\]
+
+The above equation holds true under the following conditions:
+\begin{align}
+    &expand = concatMap~expand\cdot expand1~\text{, on incomplete matrices}\\
+    &filter~p\cdot concat = concat\cdot map~(filter~p)\\
+    &filter~valid\cdot expand = filter~valid\cdot expand\cdot prune
+\end{align}
+
+\subsection*{Implementation}
+\addcontentsline{toc}{subsection}{Implementation}
+
+We need to implement the function \(safe\) that checks whether the rows and columns are valid inside the Matrix. A column or row is ok when it still fulfills two conditions. Because our implementations of \(condition1\) and \(condition2\) only work on type \(RowOrColumn~Square\) and not \(RowOrColumn~Choices\), we must look at fixed entries only. Hence, we have to adapt the usage of these functions to work for our use case here, too.
+
+\begin{equation*}
+    \begin{array}{lcl}
+        safe & :: & Matrix~Choices \rightarrow Bool \\
+        safe~m & = & all~ok~(rows~m) \land all~ok~(columns~m)
+    \end{array}
+\end{equation*}
+
+\begin{equation*}
+    \begin{array}{lcl}
+        ok & :: & Row~Choices \rightarrow Bool \\
+        ok~xs & = & okByCondition1~xs \land okByCondition2~xs
+    \end{array}
+\end{equation*}
+
+For \(okByCondition1\), we can re-use \(condition1~::~Row~Square \rightarrow Bool\) by just applying it on the fixed entries within a row. Implementing \(okByCondition2\) is a little bit more tricky. We can check completed compartments only.
+
+\begin{equation*}
+    \begin{array}{lcl}
+        okByCondition1 & :: & Row~Choices \rightarrow Bool \\
+        okByCondition1~row & = & condition1~[s~|~[s] \leftarrow row]
+    \end{array}
+\end{equation*}
+
+\begin{equation*}
+    \begin{array}{lcl}
+        okByCondition2 & :: & Row~Choices \rightarrow Bool \\
+        okByCondition2~row & = & condition2~[s~|~c \leftarrow completeComps~row, [s] \leftarrow c]
+    \end{array}
+\end{equation*}
+
+\begin{equation*}
+    \begin{array}{lcl}
+        completeComps & :: & Row~Choices \rightarrow [Compartment~Choices] \\
+        completeComps & = & filter~(all~singleton)~.~AdvancedSolver.compartments
+    \end{array}
+\end{equation*}
+
+To check whether a matrix is complete, we only have to see if all entries are singleton.
+
+\begin{equation*}
+    \begin{array}{lcl}
+        complete & :: & Matrix~[a] \rightarrow Bool \\
+        complete & = & all~(all~singleton)
+    \end{array}
+\end{equation*}
+
+\begin{equation*}
+    \begin{array}{lcl}
+        singleton & :: & [a] \rightarrow Bool \\
+        singleton~[\_] & = & True \\
+        singleton~\_ & = & False
+    \end{array}
+\end{equation*}
+
+\subsection*{Proof}
+\addcontentsline{toc}{subsection}{Proof}
+
+Because (4.6) - (4.7) are, again, valid out-of-the-box as we use the same definition for the sub-functions $expand$, and $expand1$. Equation (4.8) was proofed in the previous chapter. Hence, there is nothing left to do.

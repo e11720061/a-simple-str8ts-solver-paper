@@ -1,0 +1,73 @@
+\chapter{Introduction}
+
+In functional programming, as the name suggests, functions are the building blocks of programs. At the top, we find $main$ that, like any other function, takes an input and returns an output. Usually, it comprises other functions that are, in turn, made up of even more functions. Eventually, at the very bottom of the chain, we find functions that are language primitives. \ref{eq:id} and \ref{eq:map} show examples of such in Haskell, the programming language we use throughout this paper~\cite{hughes1989functional, hu2015functional, website-haskell-prelude}.
+
+\begin{equation}\label{eq:id}
+    \begin{array}{lcl}
+        id & :: & a \rightarrow a \\
+        id~x & = & x
+    \end{array}
+\end{equation}
+
+\begin{equation}\label{eq:map}
+    \begin{array}{lcl}
+        map & :: & (a \rightarrow b) \rightarrow [a] \rightarrow [b] \\
+        map~f~(x:xs) & = & f~x:map~f~xs
+    \end{array}
+\end{equation}
+
+Functional programming follows a declarative style. In contrast to an imperative style, the focus is on describing what a program does rather than how it does it. Take \ref{eq:fibonacci-implementation} as an example. It shows how easy it is to define the function $fibonacci$ in Haskell. It is basically equal to its mathematical definition, \ref{eq:fibonacci-definition}. There is no need to specify the flow of control. The program simply knows what to do~\cite{nikolaeva2024survey, van2009programming, scott2014origin}.
+
+\begin{equation}\label{eq:fibonacci-implementation}
+    \begin{array}{lcl}
+        fibonacci & :: & Int \rightarrow Int \\
+        fibonacci~0 & = & 0 \\
+        fibonacci~1 & = & 1 \\
+        fibonacci~n & = & fibonacci~(n-1)+fibonacci~(n-2)
+    \end{array}
+\end{equation}
+
+\begin{equation}\label{eq:fibonacci-definition}
+    \begin{array}{lcl}
+        f(0) & = & 0 \\
+        f(1) & = & 1 \\
+        f(n) & = & f(n-1)+f(n-2), \quad (n \geq 2)
+    \end{array}
+\end{equation}
+
+A function does nothing more than compute its result. There is no state, there are no side effects. This is why we can use its left and right sides, function call and result, interchangeably. We call this property \textit{referential transparency}. It makes it possible to reason about functions just like we know from mathematics. We refer to this as \textit{equational reasoning}~\cite{hughes1989functional, wadler1992essence}.
+
+Equational reasoning can be used for various purposes. Let's take a look at \ref{eq:fibonacci-2}. Here, we use it to prove that $fibonacci~2$ equals 1. This example also gives a glimpse into the notation we use throughout the paper. In general, we write functions similar to as we would in Haskell. On top, the text in curly brackets between transformation steps provides information on the applied theorems~\cite{o2007discrete}.
+
+\begin{equation}\label{eq:fibonacci-2}
+    \begin{array}{cl}
+        & fibonacci~2 \\
+        = & \quad \{\text{\ref{eq:fibonacci-implementation}, definition of $fibonacci$}\} \\
+        & fibonacci~(2-1)+fibonacci~(2-2) \\
+        = & \quad \{\text{subtraction}\} \\
+        & fibonacci~1+fibonacci~0 \\
+        = & \quad \{\text{\ref{eq:fibonacci-implementation}, definition of $fibonacci$}\} \\
+        & 1+0 \\
+        = & \quad \{\text{addition}\} \\
+        & 1
+    \end{array}
+\end{equation}
+
+In his book, \textit{Pearls of Functional Algorithm Design}, Bird discusses another application of equational reasoning. He explores the idea of using it to not only proof characteristics of algorithms, but design them altogether. In the chapter \textit{A Simple Sudoku Solver}, he demonstrates this idea by implementing a Sudoku solver in a two-step process. First, he comes up with a simple, obviously correct, but highly inefficient version of the algorithm. Then, he transforms it into a more complex, but efficient version through equational reasoning~\cite{bird2010pearls, bird2006functional}.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[scale=1]{graphics/grid-comparison-sudoku-str8ts.pdf}
+    \caption{Comparison between Sudoku and Str8ts}
+    \label{fig:grid-comparison-sudoku-str8ts}
+\end{figure}
+
+\newpage
+
+This paper explores whether Bird’s approach can be applied to Str8ts, a puzzle similar to Sudoku. See Figure~\ref{fig:grid-comparison-sudoku-str8ts} for a side by side comparison. For the implementation, we chose Haskell as our programming language, GHCup as tool management and Stack as dependency management~\cite{website-haskell, website-ghcup, website-stack}.
+
+While other functional programming languages exist, we selected Haskell because it is well-maintained and actually rooted in academia. Its development began in September 1987, when a committee was formed at the \textit{Functional Programming Languages and Computer Architecture} conference to create a common standard for functional programming languages, which were rapidly emerging at the time. This effort culminated in the publication of the \textit{Haskell 1.0 Report} in April 1990~\cite{hudak2007history}.
+
+This paper is divided into three parts. The first part covers the chapters \nameref{chap:str8ts} and \nameref{chap:data-representation}. Here, we establish the foundations by discussing the game rules and a representation of the puzzle in Haskell. The second part includes the chapters \nameref{chap:a-simple-solver} and \nameref{chap:an-advanced-solver}. Following Bird's approach, we first develop a simple but inefficient solver and turn it into a more complex but efficient solver through equational reasoning. The third part consists of the chapter \nameref{chap:runtime-analysis}. Here, we evaluate the performance of our algorithm.
+
+\todo{add github links}\todo{provide sources for images}
