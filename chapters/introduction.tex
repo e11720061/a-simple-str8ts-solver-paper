@@ -1,6 +1,12 @@
 \chapter{Introduction}
 
-In functional programming, as the name suggests, functions are the building blocks of programs. At the top, we find $main$ that, like any other function, takes an input and returns an output. Usually, it comprises other functions that are, in turn, made up of even more functions. Eventually, at the very bottom of the chain, we find functions that are language primitives. \ref{eq:id} and \ref{eq:map} show examples of such in Haskell, the programming language we use throughout this thesis~\cite{hughes1989functional, hu2015functional, website-haskell-prelude}.
+In \textit{Why Functional Programming Matters}, Hughes offers a clear definition of functional programming~\cite{hughes1989functional}:
+
+\begin{quote}
+    Functional programming is so called because its fundamental operation is the application of functions to arguments. A main program itself is written as a function that receives the program’s input as its argument and delivers the program’s output as its result. Typically, the main function is defined in terms of other functions, which in turn are defined in terms of still more functions, until, at the bottom level, the functions are language primitives.
+\end{quote}
+
+Equations~\ref{eq:id} and~\ref{eq:map} illustrate such language primitives in Haskell, the programming language used throughout this thesis~\cite{website-haskell-prelude}.
 
 \begin{equation}\label{eq:id}
     \begin{array}{lcl}
