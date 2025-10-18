@@ -1,16 +1,15 @@
 \chapter{A Simple Solver}\label{chap:a-simple-solver}
 
-We now define a clear and concise algorithm based on Bird’s approach. Some functions are reused with more descriptive names. At this stage, we are not concerned with performance or optimization.
+Now we can proceed with algorithm design. In a first step, we define a straightforward solution, $simpleSolve$, which employs a brute-force approach without any concern for performance or optimization.
 
-The main function is solve. It takes a Str8ts puzzle grid as input and generates all possible completions. These candidates are then filtered to keep only the valid solutions according to the puzzle’s rules. The algorithm handles cases with no solution, a unique solution, or multiple solutions. If the input grid is invalid — for example, if a row contains duplicate values —
-solve returns an empty list. Otherwise, it returns a list of all valid solutions.
+The function $simpleSolve$ takes a grid as input and systematically generates all possible completions, both valid and invalid. By filtering out the invalid ones, we obtain the complete solution space. The algorithm correctly handles cases with zero, one, or multiple valid solutions. If the input grid itself is invalid (for example, if a row contains duplicate values), $simpleSolve$ returns an empty list.
 
-Thanks to Haskell’s lazy evaluation, only the necessary parts of the result are computed. If only the first solution is needed, it can be obtained efficiently using the head function, without evaluating the entire list.
+Thanks to Haskell’s lazy evaluation, only the necessary portions of the result are computed. As a result, if only the first valid solution is required, it can be retrieved more efficiently using the $head$ function.
 
 \[
 \begin{array}{lcl}
-    solve & :: & Grid \rightarrow [Grid] \\
-    solve & = & filter~valid~.~completions
+    simpleSolve & :: & Grid \rightarrow [Grid] \\
+    simpleSolve & = & filter~valid~.~completions
 \end{array} \\
 \]
 
@@ -81,7 +80,7 @@ The matrix cartesian product is given by
 \section*{Validity}
 \addcontentsline{toc}{section}{Validity}
 
-Last but not least, comes the interesting part. We have to implement the function \(valid\). We assume that this function only takes completed grids as input. A matrix is valid if all rows and columns are valid.
+Last but not least, we have to implement the function \(valid\). We assume that this function only takes completed grids as input. A matrix is valid if all rows and columns are valid.
 
 \[
     \begin{array}{lcl}
@@ -106,14 +105,12 @@ A row or column, in turn, is valid if it meets two conditions. First, it does no
 
 Let's implement \(condition1\). The only squares allowed to repeat across a row or column are black, empty ones. On top of that, we agree that two squares are duplicates when their values match, independent of their colour. The function \(condition1\) discards all black, empty cells and checks whether the values of the remaining squares repeat themselves. If not, it yields \(True\).
 
-\[
+\begin{equation}\label{eq:condition1}
     \begin{array}{lcl}
-        condition1 & :: & Row Square \rightarrow Bool \\
+        condition1 & :: & Row~Square \rightarrow Bool \\
         condition1~ss & = & noDuplicates~[value~s~|~s \leftarrow ss,\neg(black~s \land empty~s)]
     \end{array}
-\]
-
-The implementation of noDuplicates is rather straightforward.
+\end{equation}
 
 \[
     \begin{array}{lcl}
@@ -128,14 +125,14 @@ The implementation of noDuplicates is rather straightforward.
 
 The second condition is that the values within all white compartments form straights.
 
-\[
+\begin{equation}\label{eq:condition2}
     \begin{array}{lcl}
         condition2 & :: & Row ~ Square \rightarrow Bool\\
         condition2 ~ ss & = & all ~ (straight ~ . ~ values) ~ . ~ whiteCompartments
     \end{array}
-\]
+\end{equation}
 
-We can implement the function \(straight\) based on its definition. When the values are sorted in ascending order, there should not be any gaps between them. \(Data.List\) provides the function \(sort ~ :: ~ Ord a => [a] \rightarrow [a]\) that sorts in ascending order. Using this function, we can define \(straight\) as
+We can implement the function \(straight\) based on its definition. When the values are sorted in ascending order, there should not be any gaps between them. \(Data.List\) provides the function \(sort ~ :: ~ Ord~a => [a] \rightarrow [a]\) that sorts in ascending order. Using this function, we can define \(straight\) as
 
 \[
     \begin{array}{lcl}
@@ -155,28 +152,29 @@ If we have two values \(v_1\) and \(v_2\), a gap means \(|v_2-v_1|>1\). In words
     \end{array}
 \]
 
+\newpage
 \section*{Improvements}
 \addcontentsline{toc}{section}{Improvements}
 
 As a reminder, \(validRow\) is defined as follows
 
-\[
+\begin{equation}\label{eq:validrow}
     \begin{array}{lcl}
         validRow & :: & Row ~ Square \rightarrow Bool \\
         validRow~ss & = & condition1~ss~\land condition2~ss
     \end{array}
-\]
+\end{equation}
 
 In the following, we want to simplify \(validRow\). Right now, the function \(straight\) works in two steps. It sorts the values inside each white compartment by applying \(sort\) and then checks whether there are gaps through \(noGaps\). However, we argue that, in combination with \(condition1\), we can skip the sorting and checking for gaps, and simply check that the minimum and maximum value inside a compartment are less apart from each other than the size of the compartment itself. In mathematical terms, we want to prove
 
 \begin{equation*}
     \begin{split}
         &\quad validRow\\
-        =&\quad\quad\{\text{some text}\}\\
+        =&\quad\quad\{\text{\ref{eq:validrow}, definition of $validRow$}\}\\
         &\quad condition1 ~ ss \land condition2 ~ ss\\
-        =&\quad\quad\{\text{some text}\}\\
+        =&\quad\quad\{\text{\ref{eq:condition2}, definition of $condition2$}\}\\
         &\quad condition1 ~ ss \land all~(straight~.~values)~(whiteCompartments ~ ss)\\
-        =&\quad\quad\{\text{some text}\}\\
+        =&\quad\quad\{\text{This needs to be proved}\}\\
         &\quad condition1 ~ ss \land all~(distanceOk~.~ values) ~(whiteCompartments ~ ss)
     \end{split}
 \end{equation*}
@@ -190,7 +188,7 @@ With \(distanceOk\) being defined as
     \end{array}
 \]
 
-We can then re-write \(condition2\) as
+We can then replace \(condition2\) with its new definition
 
 \[
     \begin{array}{lcl}
@@ -213,7 +211,7 @@ What is left is to prove is the following transformation step.
     \end{split}
 \end{equation*}
 
-To do this, we need two underlying theorems. \ref{a-simple-solver-theorem-straight} is an alternative definition for straight. In words, if \(x\) is a list of length \(n\) that does not contain duplicates and has its minimum and maximum be no further apart than \(n-1\), then \(x\) also forms a straight. The proof is left to the reader. But using this, we can re-define \(straight\) as follows.
+To do this, we need two underlying theorems. Equation \ref{a-simple-solver-theorem-straight} is an alternative definition for straight. In words, if \(x\) is a list of length \(n\) that does not contain duplicates and has its minimum and maximum be no further apart than \(n-1\), then \(x\) also forms a straight. The proof is left to the reader. But using this, we can re-define \(straight\) as in Equation \ref{a-simple-solver-definition-straight}.
 
 \begin{equation}\label{a-simple-solver-theorem-straight}
     \begin{array}{c}
@@ -229,7 +227,7 @@ To do this, we need two underlying theorems. \ref{a-simple-solver-theorem-straig
     \end{array}
 \end{equation}
 
-\ref{a-simple-solver-theorem-duplicates} says that, whenever we have a list without duplicates, any subset of this list will not have duplicates, either. This is relevant because in \(condition2\), we already check that there are no duplicates across non-blank-black cells. Because white compartments are subsets of these, this check already includes them.
+Equation \ref{a-simple-solver-theorem-duplicates} says that, whenever we have a list without duplicates, any subset of this list will not have duplicates, either. This is relevant because in \(condition2\), we already check that there are no duplicates across non-blank-black cells. Because white compartments are subsets of these, this check already includes them.
 
 \begin{equation}\label{a-simple-solver-theorem-duplicates}
     \begin{array}{c}
@@ -238,18 +236,18 @@ To do this, we need two underlying theorems. \ref{a-simple-solver-theorem-straig
     \end{array}
 \end{equation}
 
-Now, we are ready to prove.
+Now, we are ready to complete the previous equation.
 
 \begin{equation*}
     \begin{split}
         &\quad validRow\\
-        =&\quad\quad\{\text{definition}\}\\
+        =&\quad\quad\{\text{\ref{eq:validrow}, definition of $validRow$}\}\\
         &\quad condition1 ~ ss \land condition2 ~ ss\\
-        =&\quad\quad\{\text{definition}\}\\
+        =&\quad\quad\{\text{\ref{eq:condition2}, definition of $condition2$}\}\\
         &\quad condition1 ~ ss \land all~(straight~.~values)~(whiteCompartments ~ ss)\\
-        =&\quad\quad\{\text{some text}\}\\
+        =&\quad\quad\{\text{\ref{a-simple-solver-definition-straight}, alternative definition of $straight$}\}\\
         &\quad condition1 ~ ss \land all~((\setminus x \rightarrow noDuplicates ~ x \land distanceOk ~ x)~.~ values) ~(\dots)\\
-        =&\quad\quad\{\text{some text}\}\\
+        =&\quad\quad\{\text{\ref{a-simple-solver-theorem-duplicates}, $condition1$ includes $noDuplicates$}\}\\
         &\quad condition1 ~ ss \land all~(distanceOk ~.~ values) ~(whiteCompartments ~ ss)
     \end{split}
 \end{equation*}

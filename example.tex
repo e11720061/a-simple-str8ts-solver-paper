@@ -41,15 +41,13 @@
 % Additional packages
 \usepackage{nameref}
 \usepackage{minted}
-\usepackage{xcolor} % to access the named colour LightGray
-\definecolor{LightGray}{gray}{0.9}
 \newminted[mintedhaskell]{haskell}{
-  frame=lines,
+  linenos,
   framesep=2mm,
   baselinestretch=1.2,
-  bgcolor=LightGray,
   fontsize=\footnotesize,
-  linenos
+  frame=lines,
+  breaklines=true
 }
 
 % Set PDF document properties
@@ -127,7 +125,7 @@
 % \end{danksagung*}
 
 \begin{acknowledgements*}
-A special thanks goes out to family for always pushing me to finish my studies. Soon, I will actually be able to wear the graduation hat you got me for 2022.
+A special thanks goes out to my family for pushing me to finish my studies. Soon, I will actually be able to wear the graduation hat you got me for 2022.
 \end{acknowledgements*}
 
 % \begin{kurzfassung}
@@ -153,6 +151,7 @@ A special thanks goes out to family for always pushing me to finish my studies. 
 \input{chapters/an-advanced-solver}
 \input{chapters/runtime-analysis}
 \input{chapters/conclusion}
+\input{chapters/future-work}
 
 % \chapter{Additional Chapter}
 % \todo{Enter your text here.}
@@ -164,12 +163,12 @@ A special thanks goes out to family for always pushing me to finish my studies. 
 
 % Declare the use of AI tools as mentioned in the statement of originality.
 % Use either the English aitools or the German kitools.
-\begin{aitools}
-\todo{Ihr Text hier.}
-\end{aitools}
+% \begin{aitools}
+% \todo{Ihr Text hier.}
+% \end{aitools}
 
 \begin{kitools}
-\todo{Enter your text here.}
+I used a combination of ChatGPT and Grammarly for proofreading.
 \end{kitools}
 
 % Use an optional list of figures.
@@ -180,7 +179,7 @@ A special thanks goes out to family for always pushing me to finish my studies. 
 \listoftables % Starred version, i.e., \listoftables*, removes the toc entry.
 
 % Use an optional list of alogrithms.
-\listofalgorithms
+% \listofalgorithms
 \addcontentsline{toc}{chapter}{List of Algorithms}
 
 % Add an index.

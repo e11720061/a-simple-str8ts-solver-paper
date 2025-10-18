@@ -1,9 +1,10 @@
 \chapter{An Advanced Solver}\label{chap:an-advanced-solver}
 
-We successfully developed a simple Str8ts solver. However, in its current form, the algorithm remains highly inefficient, even with lazy evaluation. It computes all possible completions of the board and then searches for the first valid solution. In \textit{A Simple Sudoku Solver}, Bird presents a series of transformations that evolve an inefficient solver into a more sophisticated one. Since Str8ts and Sudoku share many structural similarities, we can adapt these techniques and apply them to our problem domain.
+We successfully developed a simple Str8ts solver. However, in its current form, the algorithm remains highly inefficient, even with lazy evaluation. It computes all possible completions of the board and then searches for the first valid solution. In \textit{A Simple Sudoku Solver}, Bird presents a series of transformations that evolve an inefficient solver into a more sophisticated one. Since Str8ts and Sudoku share many structural similarities, we apply them to our problem domain.
 
 \section*{Pruning}
 \addcontentsline{toc}{section}{Pruning}
+\label{sec:pruning}
 
 Following Bird’s approach, the algorithm can be improved by incorporating pruning functionality, allowing invalid completions to be eliminated earlier in the process and significantly reducing run-time. This method also more closely reflects how humans approach puzzle solving.
 
@@ -73,7 +74,7 @@ The function \(pruneByCondition1\) looks at all fixed choices in rows and column
 \]
 \subsubsection*{\textit{pruneByCondition2}}
 \addcontentsline{toc}{subsubsection}{\textit{pruneByCondition2}}
-The function \(pruneByCondition2\) looks at fixed choices within white compartments and how they clamp its range. However, before we start, we need to introduce a new accessor \(compartments'\) and \(isWhiteCompartment'\), because we are working with \(Matrix~Choices\), instead of \(Matrix~Square\).
+The function \(pruneByCondition2\) looks at fixed choices within white compartments and how they clamp its range. However, before we start, we need to introduce a new accessor \(compartments'\) and \(isWhiteCompartment'\), because we are working with \(Matrix~Choices\), instead of \(Matrix~Square\), now.
 \[
     \begin{array}{lcl}
         compartments' & :: & Row~Choices \rightarrow [Compartment~Choices]\\
@@ -138,7 +139,7 @@ Another improvement is to only expand the choices one step at a time. And only e
 \subsection*{Transformation}
 \addcontentsline{toc}{subsection}{Transformation}
 
-We want to apply one last transformation to $solve$. Namely,
+We want to apply one last transformation by Bird to $solve$. Namely,
 \begin{equation*}
     \begin{split}
         solve\quad = &\quad search\cdot choices\\
@@ -175,7 +176,7 @@ The above equation holds true under the following conditions:
 \subsection*{Implementation}
 \addcontentsline{toc}{subsection}{Implementation}
 
-We need to implement the function \(safe\) that checks whether the rows and columns are valid inside the Matrix. A column or row is ok when it still fulfills two conditions. Because our implementations of \(condition1\) and \(condition2\) only work on type \(RowOrColumn~Square\) and not \(RowOrColumn~Choices\), we must look at fixed entries only. Hence, we have to adapt the usage of these functions to work for our use case here, too.
+We need to implement the function \(safe\) that checks whether the rows and columns are valid inside the Matrix. A column or row is ok when it still fulfills two conditions. Because our implementations of \(condition1\) and \(condition2\) only work on type \([Square]\) and not \([Choices]\), we must look at fixed entries only. Hence, we have to adapt the usage of these functions to work for our use case here, too.
 
 \begin{equation*}
     \begin{array}{lcl}
@@ -210,7 +211,7 @@ For \(okByCondition1\), we can re-use \(condition1~::~Row~Square \rightarrow Boo
 \begin{equation*}
     \begin{array}{lcl}
         completeComps & :: & Row~Choices \rightarrow [Compartment~Choices] \\
-        completeComps & = & filter~(all~singleton)~.~AdvancedSolver.compartments
+        completeComps & = & filter~(all~singleton)~.~compartments'
     \end{array}
 \end{equation*}
 
@@ -234,4 +235,4 @@ To check whether a matrix is complete, we only have to see if all entries are si
 \subsection*{Proof}
 \addcontentsline{toc}{subsection}{Proof}
 
-Because (4.6) - (4.7) are, again, valid out-of-the-box as we use the same definition for the sub-functions $expand$, and $expand1$. Equation (4.8) was proofed in the previous chapter. Hence, there is nothing left to do.
+Because (4.6) - (4.7) are, again, valid out-of-the-box as we use the same definition for the sub-functions $expand$, and $expand1$. Equation (4.8) was discussed in the previous chapter. Hence, there is nothing left to do.

@@ -1,6 +1,6 @@
 \chapter{Data Representation}\label{chap:data-representation}
 
-Before we get started with the algorithm, we need to agree on a representation in Haskell. We introduce generic types to build upon.
+We start by agreeing on a representation of the puzzle in Haskell. We introduce generic types to build upon.
 
 \begin{equation*}
     \begin{array}{lcl}
@@ -95,7 +95,7 @@ The following is an example of an incomplete $9 \times 9$ grid. For the sake of 
 
 \section*{Accessors}\addcontentsline{toc}{section}{Accessors}
 
-Last but not least, we have to define the functions $rows$, $columns$, and $compartments$. We aim for wholemeal programming, a term coined by Geraint Jones. The goal of this paradigm is to view the data types as a whole and not succumb to \textit{Indexitis}. In our representation, we store a matrix as an array of rows. Hence, $rows$ is simply its input~\cite{hinze2009functional}.
+Last but not least, we have to define the functions $rows$, $columns$, and $compartments$. We aim for wholemeal programming, a term coined by Geraint Jones~\cite{hinze2009functional}. The goal of this paradigm is to view the data types as a whole and not succumb to \textit{Indexitis}. In our representation, we store a matrix as an array of rows. Hence, $rows$ is simply its input.
 
 \[
     \begin{array}{lcl}
@@ -104,7 +104,7 @@ Last but not least, we have to define the functions $rows$, $columns$, and $comp
     \end{array}
 \]
 
-The columns are simply the transpose of the matrix. For this purpose, we can use the function $Data.List.transpose$.
+To make it easier for us, we use the module Data.List~\cite{website-haskell-list}. To access the columns, we can simply use the function $Data.List.transpose$.
 
 \[
     \begin{array}{lcl}
@@ -113,7 +113,7 @@ The columns are simply the transpose of the matrix. For this purpose, we can use
     \end{array}
 \]
 
-While \(rows\) and \(columns\) can be applied to matrices of any kind \(a\), \(compartments\) is specific to \([Square]\). This function takes a row or column as input and returns a list of white and black compartments. It is based on \(Data.List.groupBy\) and can be reverted by applying \(concat\).
+In contrast to \(rows\) and \(columns\), the function $compartments$ is not polymorphic. It takes a row or column of type \([Square]\), as input and groups it into a list of white and black compartments. It is based on \(Data.List.groupBy\) and can be reverted by applying \(concat\).
 
 \begin{equation*}
     \begin{array}{lcl}
@@ -126,7 +126,7 @@ In some cases, it is only necessary to access white compartments. For this purpo
 
 \begin{equation*}
     \begin{array}{lcl}
-        whiteCompartments & :: & Row~Square \rightarrow [Compartment~Square] \\
+        whiteCompartments & :: & [Square] \rightarrow [Compartment~Square] \\
         whiteCompartments & = & filter~isWhiteCompartment~.~compartments
     \end{array}
 \end{equation*}

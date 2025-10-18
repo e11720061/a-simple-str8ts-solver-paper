@@ -9,15 +9,18 @@
 
 Imagine mixing Sudoku, Crosswords, and Poker...
 
-The result would probably be Str8ts, a logic-based number placement puzzle. It resembles Sudoku in terms of game play and Crosswords in terms of looks. On top, its name is a reference to Poker. Here, the term \textit{straight} denotes a hand containing cards in sequential order, but not all from the same suit. An adapted version of this rule is essential to the game of Str8ts and follows us throughout this thesis~\cite{krieger2006rules}.
+The result would probably be Str8ts, a logic-based number placement puzzle. It resembles Sudoku in terms of game play and Crosswords in terms of looks. On top, its name seems to be a reference to Poker where the term \textit{straight} denotes a hand containing cards in sequential order, but not all from the same suit. An adapted version of this rule is essential to the game of Str8ts and follows us throughout this thesis~\cite{krieger2006rules, website-str8ts}.
 
-The official website is \href{https://www.str8ts.com/}{www.str8ts.com}. Apart from puzzles that are published daily, the site also offers other resources. These include a list of solving strategies, an interactive solver, the solutions themselves, and a forum where users can share their experiences and provide feedback. All puzzles included in this thesis, such as the one in Figure \ref{fig:grid-smiley}, are taken from here.
+Its official website is \href{https://www.str8ts.com/}{www.str8ts.com}. Apart from puzzles that are published daily, the site also offers other resources. These include a list of solving strategies, an interactive solver, the solutions themselves, and a forum where users can share their experiences and provide feedback. All puzzles included in this thesis, such as the one in Figure \ref{fig:grid-smiley}, are taken from there.
 
 \newpage
-
 \section*{History}\addcontentsline{toc}{section}{History}
 
-In contrast to Sudoku which was invented in 1979, Str8ts is more novel. The concept was invented by Jeff Widderich, a Canadian puzzle designer, not earlier than 2008. Together with Andrew Stuart, a programmer originally from the UK, they turned it into a working puzzle. The two founders themselves market Str8ts as \textit{the latest and most innovative puzzle to come out since Sudoku while competing with Sudoku for depth and style of play}~\cite{cameron2007sudoku, website-syndicated-puzzles}.
+In contrast to Sudoku which was invented in 1979, Str8ts is more novel~\cite{cameron2007sudoku}. The concept was invented by Jeff Widderich, a Canadian puzzle designer, not earlier than 2008. Together with Andrew Stuart, a programmer originally from the UK, they turned it into a working puzzle. The two founders themselves market Str8ts as~\cite{website-syndicated-puzzles}:
+
+\begin{quote}
+    the latest and most innovative puzzle to come out since Sudoku while competing with Sudoku for depth and style of play
+\end{quote}
 
 To this date, Widderich and Stuart sell Str8ts puzzles through their company, Syndicated Puzzles Inc. While Str8ts was their first breakthrough, the company has expanded its assortment to include two other originals, \textit{1 to 25} and \textit{Letterlicious}, as well as other classics such as Sudoku and Crosswords~\cite{website-syndicated-puzzles}.
 
@@ -25,7 +28,7 @@ Str8ts gained recognition after being featured in the fifth season of the Canadi
 
 \section*{Game Rules}\addcontentsline{toc}{section}{Game Rules}
 
-Str8ts is played on a $9 \times 9$ grid of white and black cells, as shown in Figure \ref{fig:grid-empty}. Hence, containing 81 cells in total. Rows and columns are divided into horizontal and vertical compartments of white cells by black cells. Consequently, compartments can span a minimum of 1 and a maximum of 9 cells.
+Str8ts is played on a $9 \times 9$ grid of white and black cells, as shown in Figure \ref{fig:grid-empty}. Hence, containing 81 cells in total. Rows and columns are divided into horizontal and vertical compartments of white cells by black cells. Consequently, compartments can span a minimum of one and a maximum of nine cells.
 
 \begin{figure}[!h]
     \centering
@@ -36,7 +39,7 @@ Str8ts is played on a $9 \times 9$ grid of white and black cells, as shown in Fi
 
 \newpage
 
-Figure \ref{fig:grid-compartments} shows a Str8ts puzzle containing 18 horizontal and 18 vertical compartments. For reference, one of the horizontal compartments is highlighted in green, and one of the vertical compartments in pink. The figure also demonstrates that compartments can overlap, with some squares being shared between vertical and horizontal compartments.
+Figure \ref{fig:grid-compartments} shows a Str8ts puzzle containing 18 horizontal and 18 vertical compartments. But feel free to count for yourself! For reference, one of the horizontal compartments is highlighted in green, and one of the vertical compartments in pink. The figure also demonstrates that compartments can overlap, with some squares being shared between vertical and horizontal compartments.
 
 \begin{figure}[!h]
     \centering
@@ -45,7 +48,7 @@ Figure \ref{fig:grid-compartments} shows a Str8ts puzzle containing 18 horizonta
     \label{fig:grid-compartments}
 \end{figure}
 
-Some cells, regardless of their color, may come already filled with numbers. The objective of the game is to fill all remaining white cells with numbers from 1 to 9 as demonstrated in Figure \ref{fig:grid-solution}. Similar to Sudoku, numbers must not repeat within any row or column. However, unlike Sudoku, the puzzle does not include $3 \times 3$ boxes. Instead, it introduces a unique rule. The numbers within each compartment of white cells must form a straight.
+Some cells, regardless of their color, may come already filled with numbers. The objective of the game is to fill all remaining white cells with numbers from 1 to 9 as demonstrated in Figure \ref{fig:grid-solution}. Similar to Sudoku, numbers must not repeat within any row or column. However, unlike Sudoku, there are not any $3 \times 3$ boxes. Instead, the puzzle introduces a new rule: Numbers within each compartment of white cells must form a straight.
 
 \begin{figure}[!h]
     \centering
@@ -54,6 +57,7 @@ Some cells, regardless of their color, may come already filled with numbers. The
     \label{fig:grid-solution}
 \end{figure}
 
+\newpage
 A straight is a sequence of consecutive numbers arranged in any order. For example, a compartment of three white cells could contain the following numbers: $\{4, 5, 6\}$. However, these could appear in any sequence, such as $[5,4,6]$ or $[6,5,4]$. The latter rule was inspired by Poker and is where the puzzle gets its name from. Interestingly, a Str8ts puzzle without black cells would equal a Sudoku puzzle without the box rule.
 
 \section*{Example}\addcontentsline{toc}{section}{Example}
@@ -69,7 +73,14 @@ Let’s consider an example. In Figure \ref{fig:row-choices}, we want to fill th
 
 \section*{Variations}\addcontentsline{toc}{section}{Variations}
 
-There are several variations of Str8ts puzzles. The classical one features a grid size of $9\times 9$, but smaller versions also exist, such as the $4\times 4$ and $6\times 6$ grids. In the $4\times 4$ version, numbers range from 1 to 4, while the $6\times 6$ version uses numbers from 1 to 6.
+There are several variations of the puzzle. We can, for instance, classify it by difficulty level. The are 6 official categories: Gentle, Moderate, Tough, Diabolical, Kids, and Extremes. Although we have to yet come across the two latter ones. They do not seem to appear on the Str8ts website. The makers of Str8ts summarize their grading process as follows~\cite{website-syndicated-puzzles}:
+
+\begin{quote}
+    Our puzzles are carefully graded. We use a statistical method on large samples to determine grade bands. The logical possibilities at the core of the puzzles are used to score the puzzles in addition to some clever heuristics. Very few puzzle publishers take this approach – and some even use simple methods such as ‘number of clues’!
+\end{quote}
+
+\newpage
+Apart from this, the classical version of the puzzle features a $9\times 9$ grid. However, smaller variants also exist, such as the $4\times 4$ and $6\times 6$ grids. In the $4\times 4$ version, the numbers range from 1 to 4, while the $6\times 6$ version uses numbers from 1 to 6. Figure~\ref{fig:grid-variations-size} illustrates these grid variations.
 
 \begin{figure}[!h]
     \centering
@@ -77,8 +88,6 @@ There are several variations of Str8ts puzzles. The classical one features a gri
     \caption{Different grid sizes}
     \label{fig:grid-variations-size}
 \end{figure}
-
-\newpage
 
 Str8ts puzzles can also be categorized based on the placement of black cells. In symmetrical versions, the black cells are arranged point-symmetrically around the center of the grid. An interesting property of symmetrical grids is that they always contain an equal number of vertical and horizontal compartments. In contrast, asymmetrical versions allow black cells to be placed arbitrarily, with no specific pattern.
 
@@ -89,8 +98,7 @@ Str8ts puzzles can also be categorized based on the placement of black cells. In
     \label{fig:grid-variations-blacks}
 \end{figure}
 
-We can also classify puzzles by difficulty level. There are 6 categories: Gentle, Moderate, Tough, Diabolical, Kids, and Extremes. The makers of Str8ts state that their grading system relies on a statistical analysis of large sample sizes and uses logical possibilities and clever heuristics to determine grade bands.
-
+\newpage
 \section*{Considerations}\addcontentsline{toc}{section}{Considerations}
 
-In theory, a Str8ts puzzle can have multiple solutions, a single solution, or none at all. However, the official website guarantees that all published puzzles have a unique solution that can be reached purely through logical reasoning, without the need for guessing. In this thesis, we focus on the classical version of Str8ts, which is played on a $9 \times 9$ grid. However, we will design the algorithm to adapt to different grid sizes by adjusting a single parameter.
+In theory, a Str8ts puzzle can have multiple solutions, a single solution, or none at all. However, the official website guarantees that all published puzzles have a unique solution that can be reached purely through logical reasoning, without the need for guessing~\cite{website-syndicated-puzzles}. In this thesis, we focus on the classical version of Str8ts, which is played on a $9 \times 9$ grid. However, we will design the algorithm to adapt to different grid sizes by adjusting a single parameter.

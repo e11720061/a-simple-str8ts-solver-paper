@@ -1,12 +1,14 @@
 \chapter{Conclusion}\label{chap:conclusion}
 
-% Unlike Sudoku, Str8ts has received little academic attention. We found no algorithmic discussions on Google Scholar. This paper aims to fill that gap. We build on an idea from Bird’s A Simple Solver -- using equational reasoning to design algorithms.
-% We first present a simple but clearly correct solver: $simpleSolve$. Then, using many of Bird’s proofs, we transform it into a more efficient version: $advancedSolve$.
+The goal of this thesis was to design a Str8ts solver using equational reasoning. Haskell was chosen for implementation and evaluation due to its strong academic roots, and the development environment was set up with GHCup and Stack.
 
-% To support our analysis, we developed several tools.
-% For example, the $PuzzleScraper$ module downloads puzzles from the official website.
-% The $RuntimeAnalyser$ module measures runtime and exports the results as $.csv$. We tested $advancedSolve$ on 365 puzzles published between 01/01/2023 and 31/12/2023. It solved all puzzles correctly, matching the official solutions.
-% This runtime data can serve as a baseline for comparing future algorithms.
+Our work draws inspiration from Richard Bird’s A Simple Sudoku Solver, a well-known Functional Pearl. Functional Pearls prioritize instructional value over novelty. We tried to follow Bird’s How to Write a Functional Pearl throughout the entire thesis. However, we see it as a strict requirement only in the chapters about algorithm design. Namely, \nameref{chap:data-representation}, \nameref{chap:a-simple-solver}, and \nameref{chap:an-advanced-solver}. Significant effort was spent on refinements such as function naming and presentation order.
 
-% The full source code is available on GitHub.
-% Our framework allows others to implement and evaluate alternative solvers. Future work could compare different approaches, both quantitatively and qualitatively, to assess the value of equational reasoning.
+The chapter \nameref{chap:related-work} surveyed existing Str8ts solvers. And helped find out where to place this work in the existing reseach. A Google Scholar search for “Str8ts solver” returned nine papers, none providing an actual algorithm. A GitHub search returned 23 repositories, five in Haskell. These five all originated from a State University of Santa Catarina assignment, indicating that Haskell’s apparent popularity for this problem was coincidental rather than organic. This demonstrated that there was room for research in this area.
+
+In \nameref{chap:str8ts}, we introduced the game. Puzzles come in numerous variations. We focused on the classic 9×9 grid. But ensured the solver remains easily parameterisable. What is interesting to notw was that a Str8ts withput black field swould equal a Sudoku without the boy rule. We levered this structural similarities in the chapters \nameref{chap:data-representation}, \nameref{chap:a-simple-solver}, and \nameref{chap:an-advanced-solver}, allowing reuse of Bird’s core functions and proofs; only one essential function required a new proof. The iteratively refined into a simple and an advanced version was easy after much thought was put into Data Representaion.
+
+\newpage
+Evaluation used a MacBook Pro with two Haskell modules: PuzzleDownloader.hs for puzzle data and RuntimeAnalyser.hs for run-time metrics. Using all 365 puzzles published in 2023, the simple solver proved too slow for practical measurement, while the advanced solver demonstrated both theoretical correctness and practical efficiency.
+
+All in all, we view this method critically. We had luck that Bird’s transformations applied surprisingly well. We found that it felt actually harder to come up with transformation steps than to use general programming paradigms like backtracking. Because these transformation steps can be quite specific to the domain while programming paradigms are more general. For the same reason, it was challenging to find reference examples we could apply. Apart from this, while equational reasoning ensures mathematical correctness, it significantly increased development time. This highlights a trade-off between mathematical rigor and development efficiency. We do not necessarily agree that this approach is easy. Becasue it requires a lot of mathematical knowledge and affinity. This may come not as natural.

@@ -1,31 +1,31 @@
 \chapter{Related Work}\label{chap:related-work}
 
-While considerable research has been conducted on Sudoku already, only little exists on Str8ts. A Google Scholar search on 01.07.2025 for "sudoku algorithm" yielded about 13.300 results, while one for "str8ts algorithm" returned 9. A short skim showed that, out of these, zero actually included an algorithm~\cite{website-str8ts, jilg2009sudoku, cameron2007sudoku, website-scholar}.
+While considerable research has been conducted on Sudoku already, only little exists on Str8ts. A Google Scholar search on 01.07.2025 for "sudoku algorithm" yielded about 13.300 results, while one for "str8ts algorithm" returned 9~\cite{website-scholar}. A short skim showed that, out of these, zero actually included an algorithm.
 
 \begin{figure}[!h]
     \centering
     \includegraphics{graphics/github-languages.pdf}
-    \caption{GitHub search results}
+    \caption{GitHub search results grouped by programming language}
     \label{fig:github-languages}
 \end{figure}
 
-A search on GitHub, the largest code hosting platform, yields similar findings. Again, approximately 40,000 results for "sudoku solver" but only 23 for "str8ts solver." Figure~\ref{fig:github-languages} shows the exact programming language distribution with these 23 repositories spanning 10 different programming languages. Out of these, Haskell was the most common, appearing in 5 repositories (21.7\%).
+The same search on GitHub, one of the largest code hosting platform, yields similar findings. Again, approximately 40,000 results for "sudoku solver" but only 23 for "str8ts solver"~\cite{website-github}. Figure~\ref{fig:github-languages} shows the exact programming language distribution with these 23 repositories spanning 10 different programming languages. Out of these, Haskell was the most common, appearing in 5 repositories, making up 21.7\%.
 
 \newpage
-However, these results cannot be used to assess popularity, as they are skewed. All five Haskell repositories listed in Table \ref{tab:haskell-repositories} appear to be assignments from the State University of Santa Catarina (UDESC). Some indicators are obvious, such as files containing the university logo or course codes identifiable via Google Search. Others are subtler, including the shared language—four repositories are bilingual (English and Portuguese) and one is English-only—and similar last update times, suggesting courses with shared deadlines. The exact reasoning and detailed outline of this analysis can be found in the GitHub repository at \href{https://github.com/e11720061/a-simple-str8ts-solver/tree/main/github-analysis}{a-simple-str8ts-solver/github-analysis/}.
+However, these results appear to be biased. All five Haskell repositories listed in Table~\ref{tab:haskell-repositories} seem to originate from course assignments at the State University of Santa Catarina in Brazil~\cite{website-udesc}. Some indicators are explicit, such as files containing the university logo, while others are more subtle. For instance, four of the five repositories include content, such as commentary, written in Portuguese. Moreover, the similar last update times suggest two distinct course deadlines.
 
 \begin{table}[!h]
     \centering
     \begin{tabular}{l|l|l|l}
-        Link & Last updated & Language & Programming Language \\\hline
-        \href{https://github.com/alanludke/str8ts_haskell}{.../alanludke/str8ts\_haskell} & 2020-11-12 & EN, PT & Haskell \\
-        \href{https://github.com/andrefpf/str8ts_solver}{.../andrefpf/str8ts\_solver} & 2021-12-07 & EN, PT & Haskell \\
-        \href{https://github.com/SatoshiKei/Str8ts}{.../SatoshiKei/Str8ts} & 2020-10-15 & EN, PT & Haskell \\
-        \href{https://github.com/EnzoAlbornoz/hs-str8ts}{.../EnzoAlbornoz/hs-str8ts} & 2020-10-15 & EN & Haskell \\
-        \href{https://github.com/jeanleopoldo/str8ts_solver}{.../jeanleopoldo/str8ts\_solver} & 2021-12-13 & EN, PT & Haskell
+        Auhtor & Repository name & Last updated & Language \\\hline
+        alanludke & str8ts\_haskell & 2020-11-12 & English, Portuguese \\
+        andrefpf & str8ts\_solver & 2021-12-07 & English, Portuguese \\
+        SatoshiKei & Str8ts & 2020-10-15 & English, Portuguese \\
+        EnzoAlbornoz & hs-str8ts & 2020-10-15 & English \\
+        jeanleopoldo & str8ts\_solver & 2021-12-13 & English, Portuguese
     \end{tabular}
-    \caption{Subset of GitHub search results (EN = English, PT = Portuguese)}
+    \caption{GitHub search results that use Haskell}
     \label{tab:haskell-repositories}
 \end{table}
 
-\textit{alanludke}'s repository even includes \textit{Trabalho I.pdf}, which appears to be the original assignment document in Portuguese. Using DeepL to translate it, the task is to solve either Str8ts or Renban puzzles with Haskell. The assignment suggests implementing a backtracking approach, starting with $6\times6$ grids without worrying about efficiency, and then extending to larger grids~\cite{website-renban, website-deepl}.
+\textit{alanludke}'s repository even includes the file \textit{Trabalho I.pdf}, which appears to be the original assignment document in Portuguese. We used DeepL to translate it and determine the nature of the task~\cite{website-deepl}. The assignment involved solving either Str8ts or Renban puzzles using Haskell~\cite{website-renban}. It suggested that a backtracking approach would be most appropriate and recommended starting with $6\times6$ grids without worrying about efficiency, before scaling up to larger grids.
