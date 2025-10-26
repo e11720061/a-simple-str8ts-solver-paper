@@ -1,53 +1,42 @@
 \chapter{Run-Time Analysis}\label{chap:runtime-analysis}
 
-In the previous chapter, we introduced $advancedSolve$. Our next step was to evaluate its performance through a run-time analysis. Initially, we planned to compare $simpleSolve$ with $advancedSolve$. However, $simpleSolve$ consistently hit the 60-second timeout, even for puzzles with difficulty Gentle. We were uncertain whether $simpleSolve$ could even complete before exhausting the available working memory. Therefore, we decided to solely focus on $advancedSolve$.
+In the previous chapters, we designed two Str8ts solvers. A simple version, \textit{simpleSolve}, and its more advanced sister, \textit{advancedSolve}. Our next aim was to find a way to evaluate our work. We decided to conduct a run-time analysis because it also allows us to verify algorithm correctness empirically.
 
-\section*{Machine}\addcontentsline{toc}{section}{Machine}
+Initially, we contemplated comparing the runtimes of \textit{simpleSolve} with \textit{advancedSolve}. However, \textit{simpleSolve} was too slow for such a comparison to yield valuable insights. The algorithm consistently hit a 60-second timeout, even for puzzles with difficulty Gentle. We were uncertain whether it could finish without exhausting working memory. Hence, we looked solely at \textit{advancedSolve}.
 
-The used machine was a 16-inch MacBook Pro 2023 with an M3 Max chip. To ensure accurate measurements, all non-essential applications were closed during execution. Full software and hardware specifications are listed in Table~\ref{tab:macbook-software} and Table~\ref{tab:macbook-hardware} respectively.
+\section*{Haskell Project}\addcontentsline{toc}{section}{Haskell Project}\label{sec:haskell-project}
 
-\begin{table}[!h]
-    \centering
-    \begin{tabular}{l|l}
-        Software property & Value \\\hline
-        System version & macOS 14.1 \\
-        Kernel version & Darwin 23.1.0 \\
-    \end{tabular}
-    \caption{Software properties}
-    \label{tab:macbook-software}
-\end{table}
+We set up our environment as recommended on the Haskell website~\cite{website-haskell}. We used GHCup to manage the toolchain that consisted of GHC (compiler), HLS (language server), and Stack (build tool).
+
+We created our project with the \textit{stack new} command and worked on it in Visual Studio Code. Find it at \href{https://github.com/e11720061/a-simple-str8ts-solver/tree/main/project}{/project}. We started by implementing our existing algorithms in code. Each of the three previous chapters corresponds to its own module, see Table \ref{tab:chapters-modules}. And the code within each module follows the same order as presented in this thesis.
 
 \begin{table}[!h]
     \centering
     \begin{tabular}{l|l}
-        Hardware property & Value \\\hline
-        Chip & Apple M3 Max \\
-        Number of cores & 14 \\
-        Memory & 36 GB \\
+        Chapter & Module \\\hline
+        \nameref{chap:data-representation} & \href{https://github.com/e11720061/a-simple-str8ts-solver/blob/main/project/src/PuzzleTypes.hs}{/project/src/PuzzleTypes.hs} \\
+        \nameref{chap:a-simple-solver} & \href{https://github.com/e11720061/a-simple-str8ts-solver/blob/main/project/src/SimpleSolver.hs}{/project/src/SimpleSolver.hs} \\
+        \nameref{chap:an-advanced-solver} & \href{https://github.com/e11720061/a-simple-str8ts-solver/blob/main/project/src/AdvancedSolver.hs}{/project/src/AdvancedSolver.hs} \\
     \end{tabular}
-    \caption{Hardware properties}
-    \label{tab:macbook-hardware}
+    \caption{Chapters and their corresponding modules}
+    \label{tab:chapters-modules}
 \end{table}
 
-\newpage
+\section*{Data Acquisition}\addcontentsline{toc}{section}{Data Acquisition}\label{sec:data-acquisition}
 
-\section*{Setup}\addcontentsline{toc}{section}{Setup}
-
-The goal was to create a framework to automate run-time analysis. We set up a Haskell project using GHCup and Stack. We implemented the solution discussed in the chapters \nameref{chap:data-representation}, \nameref{chap:a-simple-solver}, and \nameref{chap:an-advanced-solver}. For each chapter, we added a corresponding module (DataTypes, SimpleSolver, and AdvancedSolver). The code in each module is structured just like presented in this thesis. This makes it easy for the reader to follow. The project can be found here \href{https://github.com/e11720061/a-simple-str8ts-solver/tree/main/project}{a-simple-str8ts-solver/project}.
-
-\section*{Data Acquisition}\addcontentsline{toc}{section}{Data Acquisition}
+We collected data for our run-time analysis directly from the official Str8ts website. Specifically, we used the URL provided below. It accepts a query parameter, \textit{day}, in the format DD/MM/YYYY. Changing it allowed us to retrieve puzzles from previous dates.
 
 \begin{center}
-    \href{https://www.str8ts.com/Print_Daily_Str8ts.aspx?solution=please&day=17/10/2025}{www.str8ts.com/Print\_Daily\_Str8ts.aspx?solution=please\&day=17/10/2025} 
+    \href{https://www.str8ts.com/Print_Daily_Str8ts.aspx?solution=please&day=26/10/2025}{www.str8ts.com/Print\_Daily\_Str8ts.aspx?solution=please\&day=26/10/2025} 
 \end{center}
 
-For our run-time analysis, we collected data exclusively from the official website. We accessed puzzles via the URL above, which accepts a query parameter day in the format DD/MM/YYYY, enabling retrieval of puzzles from previous dates. At the time of writing this thesis, the earliest available puzzle was dated 24/11/2008. However, as of 17/10/2025, the website has restricted access to the most recent 31 puzzles.
+At the start of writing this thesis, the earliest available puzzle was from 24 November 2008. However, as of today, the website restricts access to the most recent 31 puzzles. Fortunately, we had already downloaded all puzzles from 2019 to 2023. You can find them at \href{https://github.com/e11720061/a-simple-str8ts-solver/tree/main/runtime-analysis/puzzle-data}{/runtime-analysis/puzzle-data}.
 
 \begin{listing}[!h]
 \begin{mintedhaskell}
 module PuzzleDownloader where
 
-import PuzzleScraper ( getPuzzleDataFrom )
+import PuzzleScraper (getPuzzleDataFrom)
 
 savePuzzlesAsTxt :: FolderPath -> StartDate -> EndDate -> IO ()
 savePuzzlesAsTxt = forEachDateDo savePuzzleAsTxt
@@ -67,111 +56,161 @@ savePuzzleAsTxt folderPath date = do
             where content = show puzzleData
             where fileName = toJisFormat date ++ ".txt"
 \end{mintedhaskell}
-\caption{Selected code parts from module \textit{PuzzleDownloader}}
+\caption{Selected parts from PuzzleDownloader module}
 \label{lst:module-puzzledownloader}
 \end{listing}
 
-\newpage
-
-Manually retrieving the puzzles was unfeasible, so we created the \textit{PuzzleDownloader} module. It relies on another module, PuzzleScraper, that in turn, relies on the Scalpel library~\cite{website-hackage}. The entry point of the module is the function $downloadPuzzleData$. See Listing \ref{lst:module-puzzledownloader}, line 5. It scrapes the website and downloads all puzzles that were published between the start and end date into the specified folder.
+We added a module, PuzzleDownloader, that handles puzzle download for us. Its entry point is the function \textit{savePuzzlesAsTxt}. See Listing \ref{lst:module-puzzledownloader}, line 5. It downloads all puzzles published between \textit{StartDate} and \textit{EndDate} into the folder specified by \textit{FolderPath}. Internally, it relies on another function, \textit{getPuzzleDataFrom}, which stems from our PuzzleScraper module.
 
 \begin{listing}[!h]
 \begin{mintedhaskell}
 module PuzzleScraper where
 
-type Puzzle = (Date, Difficulty, Grid, Solution)
+type PuzzleData = (Date, Difficulty, Grid, Solution)
 
 type Date = String
 type Difficulty = String
 type Solution = Grid
+
+getPuzzleDataFrom :: Date -> IO (Maybe PuzzleData)
+getPuzzleDataFrom date = scrapeURL (getURL date) (getData date)
+
+getURL :: [Char] -> [Char]
+getURL date = concat [
+    "https://www.str8ts.com/",
+    "Print_Daily_Str8ts.aspx?",
+    "solution=please&lang=en&day=",
+    date]
 \end{mintedhaskell}
-\caption{Selected code parts from module \textit{PuzzleScraper}}
+\caption{Selected parts from PuzzleScraper module}
 \label{lst:module-puzzlescraper}
 \end{listing}
 
-A puzzle is defined as $\textbf{type}~Puzzle = (Date,~Difficulty,~Grid,~Solution)$. See Listing \ref{lst:module-puzzlescraper} for the exact definition. Each puzzle is stored as a \textit{.txt} file by the $PuzzleDownloader$ module, and we convert it to a string using the $show$ function. This is possible because the puzzle consists of basic data types such as arrays and strings. For the Square type, we add the clause $deriving~(Show,~Eq,~Read)$. Storing puzzles in this format makes it straightforward to reconstruct them later (see Listing \ref{lst:module-fetchPuzzleData}).
+\newpage
+The function \textit{getPuzzleDataFrom} is responsible for scraping the official website and parsing the puzzle. There is a reason why the function's name is \textit{getPuzzleDataFrom}, and not, for instance, \textit{getGridFrom}. It is because we view a puzzle as a more complex data structure that not only contains the starting grid but also its solution and metadata like date and difficulty level. See Listing \ref{lst:module-puzzlescraper}, line 3.
 
 \begin{listing}[!h]
 \begin{mintedhaskell}
-module PuzzleScraper where
+type Grid = Matrix Square
 
-fetchPuzzleData :: FilePath -> IO PuzzleData
-fetchPuzzleData filePath = do
-    contents <- readFile filePath
-    return (read contents)
+data Square = Square { color :: Color, value :: Value } deriving (Show, Eq, Read)
+data Color = White | Black deriving (Show, Eq, Read)
+type Value = Int
 \end{mintedhaskell}
-\caption{Selected code parts that parse puzzles}
-\label{lst:module-fetchPuzzleData}
+\caption{Adaptations to \textit{Grid} and \textit{Color}}
+\label{lst:deriving-clause}
 \end{listing}
 
-\newpage
-\section*{Data Selection}\addcontentsline{toc}{section}{Data Selection}
-
-For this analysis, we limited our input to puzzles published between 01/01/2023 and 31/12/2023. Our data contains a total of 365 puzzles. Of these, the difficulties \textit{Moderate}, \textit{Tough}, and \textit{Diabolical} appear 91 times and make up 24.9\% each. The difficulty \textit{Gentle} appears 92 times, slightly more, and makes up 25.2\%. Although in their portfolio it states that there are also difficulty Kids and Extreme, online it seems like there are only these 4 difficulty levels available.
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics{graphics/runtimes-difficulties.pdf}
-    \caption{Count of puzzles}
-    \label{fig:runtime-difficulties}
-\end{figure}
-
-% \begin{table}[!h]
-%     \centering
-%     \begin{tabular}{l|rr}
-%         Difficulty & Absolute & Relative \\\hline
-%         Gentle & 92 & 25.21\% \\
-%         Moderate & 91 & 24.93\% \\
-%         Tough & 91 & 24.93\% \\
-%         Diabolical & 91 & 24.93\% \\\hline\hline
-%         Grand Total & 365 & 100.00\%
-%     \end{tabular}
-%     \caption{Count of puzzles}
-%     \label{tab:runtimes-difficulties}
-% \end{table}
-
-The average number of blank cells is 48.52, with a minimum of 39 and a maximum of 59. The puzzle with the fewest blank cells is of gentle difficulty, while the one with the most is diabolical. The number of blank cells appears to increase with difficulty, suggesting it may be a good indicator of puzzle difficulty.
-
-\begin{figure}[!h]
-    \centering
-    \includegraphics{graphics/runtimes-blanks.pdf}
-    \caption{Count of blank squares}
-    \label{fig:runtime-blanks}
-\end{figure}
-
-% \begin{table}[!h]
-%     \centering
-%     \begin{tabular}{l|rrr}
-%         Difficulty & Minimum & Average & Maximum \\\hline
-%         Gentle & 36 & 42.49 & 48 \\
-%         Moderate & 42 & 45.86 & 50 \\
-%         Tough & 48 & 51.92 & 57 \\
-%         Diabolical & 51 & 54.60 & 60 \\\hline\hline
-%         Grand Total & 36 & 48.70 & 60
-%     \end{tabular}
-%     \caption{Hardware Properties}
-%     \label{tab:macbook-hardware}
-% \end{table}
-
-\newpage
-\section*{Run-Time Measurement}\addcontentsline{toc}{section}{Runtime Measurement}
-
-The RuntimeAnalyser module is responsible for measuring and recording the execution time of the algorithm. An overview of key code components is provided in Listing \ref{lst:module-runtimeanalyser-keycode}. The module’s primary entry point is the function $readAndAnalyzePuzzles$, which accepts the path to a .csv output file and populates it with runtime data along with metadata such as puzzle difficulty and date. If the algorithm fails to complete within a 60-second timeout, certain columns remain empty. For instance, the Solutions column, which indicates the number of solutions identified by the algorithm.
+The \textit{PuzzleDownloader} module stores each puzzle in a separate text file. The file content is simply the puzzle converted to a string using \textit{show}. This works because a puzzle is a quadruple of basic types, such as arrays and strings. Even \textit{Grid} is just an array of arrays of \textit{Square}. The only exceptions are \textit{Square} and \textit{Color}, which is why we need to add \textit{deriving} clauses to their definitions. See Listing \ref{lst:deriving-clause}, line 3 and 4.
 
 \begin{listing}[!h]
 \begin{mintedhaskell}
 module RuntimeAnalyser where
 
-columnNames :: String
-columnNames = ["Date",
+readPuzzle :: FilePath -> IO Puzzle
+readPuzzle filePath = do
+    contents <- readFile filePath
+    return (read contents)
+\end{mintedhaskell}
+\caption{Parsing text files back to puzzles}
+\label{lst:module-fetchPuzzleData}
+\end{listing}
+
+This way of storing puzzles makes it easy to parse them back. We simply use the read function. See Listing \ref{lst:module-fetchPuzzleData}, line 3.
+
+\section*{Data Selection}\addcontentsline{toc}{section}{Data Selection}
+
+For this analysis, we limited our input to puzzles published between 01.01.2023 and 31.12.2023. Our data contains a total of 365 puzzles. Of these, the difficulties \textit{Moderate}, \textit{Tough}, and \textit{Diabolical} appear 91 times and make up 24.9\% each. The difficulty \textit{Gentle} appears 92 times, slightly more, and makes up 25.2\%. There were not any puzzles of difficulty Kids and Extreme.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics{graphics/runtimes-difficulties.pdf}
+    \caption{Count of puzzles by difficulty}
+    \label{fig:runtime-difficulties}
+\end{figure}
+
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{l|rr}
+        Difficulty & Absolute & Relative \\\hline
+        Gentle & 92 & 25.2\% \\
+        Moderate & 91 & 24.9\% \\
+        Tough & 91 & 24.9\% \\
+        Diabolical & 91 & 24.9\% \\\hline\hline
+        Grand Total & 365 & 100.00\%
+    \end{tabular}
+    \caption{Count of puzzles by difficulty}
+    \label{tab:runtimes-difficulties}
+\end{table}
+
+\newpage
+The average number of blank cells is 48.7, with a minimum of 36 and a maximum of 60. The puzzle with the fewest blank cells is of difficulty Gentle, while the one with the most is of difficulty Diabolical. The number of blank cells appears to be a good indicator of puzzle difficulty.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics{graphics/runtimes-blanks.pdf}
+    \caption{Count of blank squares by difficulty}
+    \label{fig:runtime-blanks}
+\end{figure}
+
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{l|rrr}
+        Difficulty & Minimum & Average & Maximum \\\hline
+        Gentle & 36 & 42.5 & 48 \\
+        Moderate & 42 & 45.9 & 50 \\
+        Tough & 48 & 51.9 & 57 \\
+        Diabolical & 51 & 54.6 & 60 \\\hline\hline
+        Grand Total & 36 & 48.7 & 60
+    \end{tabular}
+    \caption{Count of blank squares by difficulty}
+    \label{tab:macbook-hardware}
+\end{table}
+
+\section*{Machine}\addcontentsline{toc}{section}{Machine}\label{sec:machine}
+
+We used a 16-inch MacBook Pro 2023 with an M3 Max chip. See Table~\ref{tab:macbook-software} and Table~\ref{tab:macbook-hardware} for the software and hardware specifications. During execution, we closed non-essential applications. We double-checked this in the Activity Monitor.
+
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{l|l}
+        System version & macOS 14.1 \\
+        Kernel version & Darwin 23.1.0 \\
+    \end{tabular}
+    \caption{Software properties}
+    \label{tab:macbook-software}
+\end{table}
+
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{l|l}
+        Chip & Apple M3 Max \\
+        Number of cores & 14 \\
+        Memory & 36 GB \\
+    \end{tabular}
+    \caption{Hardware properties}
+    \label{tab:macbook-hardware}
+\end{table}
+
+\section*{Run-Time Measurement}\addcontentsline{toc}{section}{Runtime Measurement}
+
+The RuntimeAnalyser module is responsible for measuring and recording the algorithm’s execution time. We provide selected code parts in Listing \ref{lst:module-runtimeanalyser-keycode}. The module’s primary entry point is the function $readAndAnalyzePuzzles$, which accepts $PuzzleFolderPath$ and $Solver$ and populates the file defined by $OutputCsvPath$. Specifically, it creates the columns specified by $columnNames$ in Listing \ref{lst:module-runtimeanalyser-keycode}, line 3. If the solver fails to complete within a 60-second timeout, a new row is added, but the columns Number of solutions, Equal to official solution, and Run-time (ns) are left empty.
+
+\begin{listing}[!h]
+\begin{mintedhaskell}
+module RuntimeAnalyser where
+
+columnNames :: String[]
+columnNames = [
+    "Date",
     "Difficulty",
-    "Solutions",
-    "Official solution",
+    "Number of solutions",
+    "Equal to official solution",
     "Run-time (ns)",
-    "Blacks",
-    "Blanks",
+    "Number of black squares",
+    "Number of blank squares",
     "Symmetrical"
-]
+    ]
 
 readAndAnalyzePuzzles :: OutputCsvPath -> PuzzleFolderPath -> Solver -> IO()
 readAndAnalyzePuzzles outputCsvPath puzzleFolderPath solver = do
@@ -190,7 +229,7 @@ readAndAnalyzePuzzle solver outputCsvPath puzzlePath = do
     analyzePuzzle solver outputCsvPath puzzleData
     putStrLn "\n--------------------------------------------------\n"
 \end{mintedhaskell}
-\caption{Key code components in module RuntimeAnalyser}
+\caption{Selected parts from RuntimeAnalyser module}
 \label{lst:module-runtimeanalyser-keycode}
 \end{listing}
 
@@ -213,68 +252,70 @@ readAndAnalyzePuzzle solver outputCsvPath puzzlePath = do
 
 \section*{Results}\addcontentsline{toc}{section}{Results}
 
-The overall average runtime was 504.1 ms, with a minimum of 3.5 ms for a puzzle of Gentle difficulty and a maximum of 14,359.3 ms for a Diabolical puzzle. On average, the algorithm takes roughly twice as long to solve Moderate puzzles compared to Gentle ones, about 21 times longer for Tough puzzles compared to Moderate, and approximately three times longer for Diabolical puzzles compared to Tough. This indicates that the increase in average runtime is steepest between Moderate and Tough puzzles, while the growth slows when moving from Tough to Diabolical.
+The overall average run-time was 504.1 ms, with a minimum of 3.5 ms for a puzzle of difficulty Gentle and a maximum of 14,359.3 ms ($\approx 14.4$ s) for a puzzle with difficulty Tough. On average, the algorithm takes roughly twice as long to solve Moderate puzzles than Gentle ones, about 21 times longer to solve Tough puzzles than Moderate, and approximately three times longer to solve Diabolical puzzles than Tough. Summed up, the increase in average run-time is steepest between Moderate and Tough, while the growth slows when moving from Tough to Diabolical.
 
 \begin{figure}[!h]
     \centering
     \includegraphics{graphics/runtimes-by-difficulty.pdf}
-    \caption{Run-times (without outliers)}
+    \caption{Run-time by difficulty (without outliers)}
     \label{fig:runtimes-by-difficulty}
 \end{figure}
 
-% \begin{table}[!h]
-%     \centering
-%     \begin{tabular}{l|rrr}
-%         Difficulty & Minimum (ms) & Average (ms) & Maximum (ms) \\\hline
-%         Gentle & 3501 & 12.39 & 69757.00 \\
-%         Moderate & 5259 & 24.02 & 318948.00 \\
-%         Tough & 19784 & 509090.74 & 14359.28 \\
-%         Diabolical & 27689 & 1476.22 & 14321.71 \\\hline\hline
-%         Grand Total & 3501 & 504079.75 & 14359.28
-%     \end{tabular}
-%     \caption{Run-times}
-%     \label{tab:macbook-hardware}
-% \end{table}
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{l|rrr}
+        Difficulty & Minimum (ms) & Average (ms) & Maximum (ms) \\\hline
+        Gentle & 3.5 & 12.4 & 69.8 \\
+        Moderate & 5.3 & 24.0 & 318.9 \\
+        Tough & 19.8 & 509.1 & 14,359.3 \\
+        Diabolical & 27.7 & 1,476.2 & 14,321.7 \\\hline\hline
+        Grand Total & 3.5 & 504.1 & 14,359.3
+    \end{tabular}
+    \caption{Run-time by difficulty}
+    \label{tab:macbook-hardware}
+\end{table}
 
-Figure \ref{fig:runtimes-by-blanks} shows the average run times grouped by the number of blank cells. Similar to the box plot shown earlier, run times tend to increase as the number of blank cells increases. The minimum number of blank cells in the dataset is 36. Interestingly, the lowest average run time—6 ms—is observed for a puzzle with 37 blank cells. The maximum number of blank cells is 60, and puzzles with this number of blanks exhibit the highest average run time of 4787.7 ms.
+Figure \ref{fig:runtimes-by-blanks} shows the average run-time grouped by the number of blank cells. Similar to the box plot shown earlier, the run-time tends to increase as the number of blank cells increases. The minimum number of blank cells in the dataset is 36. Interestingly, the lowest average run-time, 6 ms, is observed for puzzles with 37 blank cells. The maximum number of blank cells is 60, and such puzzles exhibit the highest average run-time of 4,787.8 ms.
+
+Find all files related to this analysis at \href{https://github.com/e11720061/a-simple-str8ts-solver/tree/main/runtime-analysis}{/runtime-analysis}.
 
 \begin{figure}[!h]
     \centering
     \includegraphics{graphics/runtimes-by-blanks.pdf}
-    \caption{Average run-times by blank squares}
+    \caption{Average run-time by blank squares}
     \label{fig:runtimes-by-blanks}
 \end{figure}
 
-% \begin{table}[!h]
-%     \centering
-%     \begin{tabular}{rr}
-%         Blanks & Average (ms) \\\hline
-%         36 & 6.53 \\
-%         37 & 6.01 \\
-%         38 & 6.14 \\
-%         39 & 7.08 \\
-%         40 & 7.86 \\
-%         41 & 6.85 \\
-%         42 & 11.63 \\
-%         43 & 16.89 \\
-%         44 & 25.24 \\
-%         45 & 22.91 \\
-%         46 & 23.09 \\
-%         47 & 14.75 \\
-%         48 & 41.37 \\
-%         49 & 111.59 \\
-%         50 & 430.28 \\
-%         51 & 397.75 \\
-%         52 & 445.34 \\
-%         53 & 918.84 \\
-%         54 & 621.25 \\
-%         55 & 1876.16 \\
-%         56 & 1876.84 \\
-%         57 & 1729.40 \\
-%         58 & 2198.59 \\
-%         59 & 1190.80 \\
-%         60 & 4787.75 \\
-%     \end{tabular}
-%     \caption{Average run-times by blank squares}
-%     \label{tab:runtimes-by-blanks}
-% \end{table}
+\begin{table}[!h]
+    \centering
+    \begin{tabular}{rr}
+        Blanks & Average (ms) \\\hline
+        36 & 6.5 \\
+        37 & 6.0 \\
+        38 & 6.1 \\
+        39 & 7.1 \\
+        40 & 7.9 \\
+        41 & 6.9 \\
+        42 & 11.6 \\
+        43 & 16.9 \\
+        44 & 25.2 \\
+        45 & 22.9 \\
+        46 & 23.1 \\
+        47 & 14.8 \\
+        48 & 41.4 \\
+        49 & 111.6 \\
+        50 & 430.3 \\
+        51 & 397.8 \\
+        52 & 445.3 \\
+        53 & 918.8 \\
+        54 & 621.2 \\
+        55 & 1,876.2 \\
+        56 & 1,876.8 \\
+        57 & 1,729.4 \\
+        58 & 2,198.6 \\
+        59 & 1,190.8 \\
+        60 & 4,787.7 \\
+    \end{tabular}
+    \caption{Average run-time by blank squares}
+    \label{tab:runtimes-by-blanks}
+\end{table}

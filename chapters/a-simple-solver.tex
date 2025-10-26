@@ -1,6 +1,6 @@
 \chapter{A Simple Solver}\label{chap:a-simple-solver}
 
-Now we can proceed with algorithm design. In a first step, we define a straightforward solution, $simpleSolve$, which employs a brute-force approach without any concern for performance or optimization.
+Now we can proceed with algorithm design. In a first step, we define a straightforward solution, $simpleSolve$, that employs a brute-force approach with no concern for performance or optimization.
 
 The function $simpleSolve$ takes a grid as input and systematically generates all possible completions, both valid and invalid. By filtering out the invalid ones, we obtain the complete solution space. The algorithm correctly handles cases with zero, one, or multiple valid solutions. If the input grid itself is invalid (for example, if a row contains duplicate values), $simpleSolve$ returns an empty list.
 
@@ -68,7 +68,6 @@ The matrix cartesian product is given by
         mcp & = & cp~.~map~cp
     \end{array}
 \]
-
 \[
     \begin{array}{lcl}
         cp & :: & [[a]] \rightarrow [[a]] \\
@@ -103,15 +102,14 @@ A row or column, in turn, is valid if it meets two conditions. First, it does no
 \subsection*{Condition 1}
 \addcontentsline{toc}{subsection}{Condition 1}
 
-Let's implement \(condition1\). The only squares allowed to repeat across a row or column are black, empty ones. On top of that, we agree that two squares are duplicates when their values match, independent of their colour. The function \(condition1\) discards all black, empty cells and checks whether the values of the remaining squares repeat themselves. If not, it yields \(True\).
+Let’s implement \(condition1\). The only squares allowed to repeat across a row or column are black, empty ones. On top of that, we agree that two squares are duplicates when their values match, independent of their colour. The function \(condition1\) discards all black, empty cells and checks whether the values of the remaining squares repeat themselves. If not, it yields \(True\).
 
 \begin{equation}\label{eq:condition1}
     \begin{array}{lcl}
         condition1 & :: & Row~Square \rightarrow Bool \\
-        condition1~ss & = & noDuplicates~[value~s~|~s \leftarrow ss,\neg(black~s \land empty~s)]
+        condition1~ss & = & noDuplicates~[value~s~|~s \leftarrow ss,~not~(black~s \land empty~s)]
     \end{array}
 \end{equation}
-
 \[
     \begin{array}{lcl}
         noDuplicates & :: & Eq~a \Rightarrow [a] \rightarrow Bool\\
@@ -132,7 +130,7 @@ The second condition is that the values within all white compartments form strai
     \end{array}
 \end{equation}
 
-We can implement the function \(straight\) based on its definition. When the values are sorted in ascending order, there should not be any gaps between them. \(Data.List\) provides the function \(sort ~ :: ~ Ord~a => [a] \rightarrow [a]\) that sorts in ascending order. Using this function, we can define \(straight\) as
+We can implement the function \(straight\) based on its definition. When we sort the values in ascending order, there should not be any gaps between them. \(Data.List\) provides the function \(sort ~ :: ~ Ord~a => [a] \rightarrow [a]\) that sorts in ascending order. Using this function, we can define \(straight\) as
 
 \[
     \begin{array}{lcl}
@@ -141,7 +139,7 @@ We can implement the function \(straight\) based on its definition. When the val
     \end{array}
 \]
 
-If we have two values \(v_1\) and \(v_2\), a gap means \(|v_2-v_1|>1\). In words, that the gap between the two integer values is something other than 1. It's important to note that \(noGaps\) needs input lists in ascending order.
+If we have two values \(v_1\) and \(v_2\), a gap means \(|v_2-v_1|>1\). In words, the gap between the two integer values is something other than 1. It’s important to note that \(noGaps\) needs input lists in ascending order.
 
 \[
     \begin{array}{lcl}
@@ -165,7 +163,7 @@ As a reminder, \(validRow\) is defined as follows
     \end{array}
 \end{equation}
 
-In the following, we want to simplify \(validRow\). Right now, the function \(straight\) works in two steps. It sorts the values inside each white compartment by applying \(sort\) and then checks whether there are gaps through \(noGaps\). However, we argue that, in combination with \(condition1\), we can skip the sorting and checking for gaps, and simply check that the minimum and maximum value inside a compartment are less apart from each other than the size of the compartment itself. In mathematical terms, we want to prove
+In the following, we want to simplify \(validRow\). Right now, the function \(straight\) inside $condition2$ works in two steps. It sorts the values inside each white compartment by applying \(sort\) and then checks whether there are gaps through \(noGaps\). However, we argue that, in combination with \(condition1\), we can drop both $sort$ and $noGaps$. Instead, we only need to check that the minimum and maximum values within the compartment are less apart than the compartment’s size. In mathematical terms, we want to prove
 
 \begin{equation*}
     \begin{split}
@@ -184,16 +182,16 @@ With \(distanceOk\) being defined as
 \[
     \begin{array}{lcl}
         distanceOk & :: & [Int] \rightarrow Bool\\
-        distanceOk~xs & = & maximum~xs - minimum~xs < length~xs~.
+        distanceOk~xs & = & maximum~xs - minimum~xs < length~xs~
     \end{array}
 \]
 
-We can then replace \(condition2\) with its new definition
+We can then re-write \(condition2\) as
 
 \[
     \begin{array}{lcl}
         condition2 & :: & Row ~ Square \rightarrow Bool\\
-        condition2 ~ ss & = & all ~ (distanceOk ~ . ~ values) ~ . ~ whiteCompartments
+        condition2 & = & all ~ (distanceOk ~ . ~ values) ~ . ~ whiteCompartments
     \end{array}
 \]
 
@@ -201,17 +199,9 @@ We can then replace \(condition2\) with its new definition
 \subsection*{Proof}
 \addcontentsline{toc}{subsection}{Proof}
 
-What is left is to prove is the following transformation step.
+We need to establish two theorems.
 
-\begin{equation*}
-    \begin{split}
-        &\quad condition1 ~ ss \land all~(straight~.~values)~(whiteCompartments ~ ss)\\
-        =&\quad\quad\{\text{This needs to be proved}\}\\
-        &\quad condition1 ~ ss \land all~(distanceOk~.~ values) ~(whiteCompartments ~ ss)
-    \end{split}
-\end{equation*}
-
-To do this, we need two underlying theorems. Equation \ref{a-simple-solver-theorem-straight} is an alternative definition for straight. In words, if \(x\) is a list of length \(n\) that does not contain duplicates and has its minimum and maximum be no further apart than \(n-1\), then \(x\) also forms a straight. The proof is left to the reader. But using this, we can re-define \(straight\) as in Equation \ref{a-simple-solver-definition-straight}.
+First, Equation \ref{a-simple-solver-theorem-straight}, which is an alternative definition for straight. It states that, if \(x\) is a list of length \(n\) that does not contain duplicates and has its minimum and maximum be no further apart than \(n-1\), then \(x\) forms a straight.
 
 \begin{equation}\label{a-simple-solver-theorem-straight}
     \begin{array}{c}
@@ -220,24 +210,38 @@ To do this, we need two underlying theorems. Equation \ref{a-simple-solver-theor
     \end{array}
 \end{equation}
 
+The proof is simple. Because of \((i\neq j \Rightarrow x_i\neq x_j)\), \(x\) can be sorted into a list of ascending order. Namely, \([x_1,\dots ,x_n]\) with \(min_x=x_1\) and \(max_x=x_n\). Because of \((max_x-min_x=n-1)\), the step size between elements cannot be larger than \(1\), as demonstrated by the following equation.
+
+\begin{equation*}
+    \begin{array}{lcl}
+        x_1 & = & x_1 \\
+        x_2 & = & x_1 + 1 \\
+        x_3 & = & x_2 + 1 = (x_1 + 1) + 1 = x_1 + 2\\
+        & \dots & \\
+        x_{n} & = & x_1 + (n-1)
+    \end{array}
+\end{equation*}
+
+This makes $x$ a straight by definition. Now that we have established the correctness of Equation \ref{a-simple-solver-theorem-straight}, we can use it to redefine our function $straight$ as follows.
+
 \begin{equation}\label{a-simple-solver-definition-straight}
     \begin{array}{lcl}
         straight & :: & [Int] \rightarrow Bool\\
-        straight ~ x & = & noDuplicates ~ x \land distanceOk ~ x
+        straight ~ xs & = & noDuplicates ~ xs \land distanceOk ~ xs
     \end{array}
 \end{equation}
 
-Equation \ref{a-simple-solver-theorem-duplicates} says that, whenever we have a list without duplicates, any subset of this list will not have duplicates, either. This is relevant because in \(condition2\), we already check that there are no duplicates across non-blank-black cells. Because white compartments are subsets of these, this check already includes them.
+The second theorem is Equation \ref{a-simple-solver-theorem-duplicates}. It states that, whenever we have a list without duplicates, any subset of this list will not have duplicates, either. This is relevant because in \(condition2\), we already check that there are no duplicates across non-empty black cells. Because white compartments are subsets of these, this check already includes them.
 
 \begin{equation}\label{a-simple-solver-theorem-duplicates}
     \begin{array}{c}
-        (i\neq j \Rightarrow x_i\neq x_j) \Rightarrow (i\neq j \Rightarrow y_i\neq y_j)\\
+        (i\neq j) \Rightarrow (x_i\neq x_j) \Rightarrow (y_i\neq y_j)\\
         X \supset Y, ~ x \in X, ~ y \in Y 
     \end{array}
 \end{equation}
 
+\newpage
 Now, we are ready to complete the previous equation.
-
 \begin{equation*}
     \begin{split}
         &\quad validRow\\

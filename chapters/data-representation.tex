@@ -1,6 +1,6 @@
 \chapter{Data Representation}\label{chap:data-representation}
 
-We start by agreeing on a representation of the puzzle in Haskell. We introduce generic types to build upon.
+We start by agreeing on a Haskell representation of the puzzle. We introduce generic types to build upon.
 
 \begin{equation*}
     \begin{array}{lcl}
@@ -11,7 +11,7 @@ We start by agreeing on a representation of the puzzle in Haskell. We introduce 
     \end{array}
 \end{equation*}
 
-The puzzle is played on a grid of size $n \times n$. We choose $n=9$ as it is the most common. But, if necessary, 9 can be replaced by any positive, integer number. Elements inside the grid are called squares. A $9 \times 9$ grid, as a consequence, contains a total of 81 squares.
+The puzzle is played on an $  n\times n$ grid. We choose $n=9$ as it is the most common. But, if necessary, 9 can be replaced by any positive integer. Elements inside the grid are called squares. A $9 \times 9$ grid, as a consequence, contains a total of 81 squares.
 
 \begin{equation*}
     \begin{array}{lcl}
@@ -19,7 +19,6 @@ The puzzle is played on a grid of size $n \times n$. We choose $n=9$ as it is th
         size & = & 9
     \end{array}
 \end{equation*}
-
 \begin{equation*}
     \begin{array}{lcl}
         \textbf{type}~Grid & = & Matrix~Square
@@ -36,7 +35,7 @@ Each square holds two attributes. A colour $\in\{White,~Black\}$ and a value $\i
     \end{array}
 \end{equation*}
 
-Squares with a value of 0 are empty. A complete grid does not contain any empty, white squares. However, it might contain empty, black squares. In the following, we will simply refer to empty, white squares as blank squares. We introduce the function $blank$ to check whether a square is blank or not.
+Squares with a value of 0 are empty. A complete grid contains no empty white squares. However, it might contain empty black squares. In the following, we will refer to empty, white squares as blank squares. We introduce the function $blank$ to determine whether a square is blank.
 
 \begin{equation*}
     \begin{array}{lcl}
@@ -44,21 +43,18 @@ Squares with a value of 0 are empty. A complete grid does not contain any empty,
         blank~s & = & empty~s \land white~s
     \end{array}
 \end{equation*}
-
 \begin{equation*}
     \begin{array}{lcl}
         empty & :: & Square \rightarrow Bool \\
         empty & = & (==0)~.~value
     \end{array}
 \end{equation*}
-
 \begin{equation*}
     \begin{array}{lcl}
         white & :: & Square \rightarrow Bool \\
         white & = & not~.~black
     \end{array}
 \end{equation*}
-
 \begin{equation*}
     \begin{array}{lcl}
         black & :: & Square \rightarrow Bool \\
@@ -68,7 +64,7 @@ Squares with a value of 0 are empty. A complete grid does not contain any empty,
 
 \section*{Example}\addcontentsline{toc}{section}{Example}
 
-The following is an example of an incomplete $9 \times 9$ grid. For the sake of readability, we abbreviated the constructors. We simply write $S$ for $Square$, $W$ for $White$, and $B$ for $Black$. For example, $S~W~3$ abbreviates $Square~White~3$.
+The following is an example of an incomplete $9 \times 9$ grid. For readability, we abbreviated the constructors. We simply write $S$ for $Square$, $W$ for $White$, and $B$ for $Black$. For example, $S~W~3$ abbreviates $Square~White~3$.
 
 \begin{figure}[!h]
     \centering
@@ -95,7 +91,7 @@ The following is an example of an incomplete $9 \times 9$ grid. For the sake of 
 
 \section*{Accessors}\addcontentsline{toc}{section}{Accessors}
 
-Last but not least, we have to define the functions $rows$, $columns$, and $compartments$. We aim for wholemeal programming, a term coined by Geraint Jones~\cite{hinze2009functional}. The goal of this paradigm is to view the data types as a whole and not succumb to \textit{Indexitis}. In our representation, we store a matrix as an array of rows. Hence, $rows$ is simply its input.
+Last but not least, we have to define the functions $rows$, $columns$, and $compartments$. We aim for wholemeal programming, a term coined by Geraint Jones~\cite{hinze2009functional}. The goal of this paradigm is to view data types holistically and avoid succumbing to Indexitis. In our representation, we store a matrix as an array of rows. Hence, $rows$ is equal to the $id$ function.
 
 \[
     \begin{array}{lcl}
@@ -104,7 +100,7 @@ Last but not least, we have to define the functions $rows$, $columns$, and $comp
     \end{array}
 \]
 
-To make it easier for us, we use the module Data.List~\cite{website-haskell-list}. To access the columns, we can simply use the function $Data.List.transpose$.
+To make it easier for us, we use the module Data.List~\cite{website-haskell-list}. To access the columns, we can use the function $Data.List.transpose$.
 
 \[
     \begin{array}{lcl}
@@ -113,7 +109,7 @@ To make it easier for us, we use the module Data.List~\cite{website-haskell-list
     \end{array}
 \]
 
-In contrast to \(rows\) and \(columns\), the function $compartments$ is not polymorphic. It takes a row or column of type \([Square]\), as input and groups it into a list of white and black compartments. It is based on \(Data.List.groupBy\) and can be reverted by applying \(concat\).
+In contrast to \(rows\) and \(columns\), the function $compartments$ is not polymorphic. It takes a row or column of type \([Square]\) as input and groups it into a list of white and black compartments. It uses \(Data.List.groupBy\) and we can revert it by applying \(concat\).
 
 \begin{equation*}
     \begin{array}{lcl}
@@ -130,7 +126,6 @@ In some cases, it is only necessary to access white compartments. For this purpo
         whiteCompartments & = & filter~isWhiteCompartment~.~compartments
     \end{array}
 \end{equation*}
-
 \begin{equation*}
     \begin{array}{lcl}
         isWhiteCompartment & :: & Compartment~Square \rightarrow Bool \\

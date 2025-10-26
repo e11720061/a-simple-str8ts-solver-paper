@@ -1,6 +1,6 @@
 \chapter{Related Work}\label{chap:related-work}
 
-While considerable research has been conducted on Sudoku already, only little exists on Str8ts. A Google Scholar search on 01.07.2025 for "sudoku algorithm" yielded about 13.300 results, while one for "str8ts algorithm" returned 9~\cite{website-scholar}. A short skim showed that, out of these, zero actually included an algorithm.
+While considerable research has already been conducted on Sudoku, little has been done on Str8ts. A Google Scholar search on 01.07.2025 for “sudoku algorithm” yielded about 13,300 results, while one for “str8ts algorithm” returned nine~\cite{website-scholar}. A quick skim showed that none of these actually included an algorithm.
 
 \begin{figure}[!h]
     \centering
@@ -9,10 +9,10 @@ While considerable research has been conducted on Sudoku already, only little ex
     \label{fig:github-languages}
 \end{figure}
 
-The same search on GitHub, one of the largest code hosting platform, yields similar findings. Again, approximately 40,000 results for "sudoku solver" but only 23 for "str8ts solver"~\cite{website-github}. Figure~\ref{fig:github-languages} shows the exact programming language distribution with these 23 repositories spanning 10 different programming languages. Out of these, Haskell was the most common, appearing in 5 repositories, making up 21.7\%.
+A corresponding search on GitHub, one of the largest code hosting platforms, yields similar findings. Again, approximately 40,000 results for “sudoku solver” but only 23 for “str8ts solver”~\cite{website-github}. Figure~\ref{fig:github-languages} shows the exact distribution across these 23 repositories, spanning 10 programming languages. Of these, Haskell was the most common, appearing in five repositories, accounting for $21.7\%$.
 
 \newpage
-However, these results appear to be biased. All five Haskell repositories listed in Table~\ref{tab:haskell-repositories} seem to originate from course assignments at the State University of Santa Catarina in Brazil~\cite{website-udesc}. Some indicators are explicit, such as files containing the university logo, while others are more subtle. For instance, four of the five repositories include content, such as commentary, written in Portuguese. Moreover, the similar last update times suggest two distinct course deadlines.
+However, these results appear to be biased. All five Haskell repositories (see Table~\ref{tab:haskell-repositories}) seem to originate from course assignments at the State University of Santa Catarina in Brazil~\cite{website-udesc}. Some indicators are explicit, such as files containing the university logo, while others are more subtle. For instance, four of the five repositories include content, such as commentary, written in Portuguese. Moreover, the similar last update times suggest that there were two deadlines / two different courses.
 
 \begin{table}[!h]
     \centering
@@ -28,4 +28,6 @@ However, these results appear to be biased. All five Haskell repositories listed
     \label{tab:haskell-repositories}
 \end{table}
 
-\textit{alanludke}'s repository even includes the file \textit{Trabalho I.pdf}, which appears to be the original assignment document in Portuguese. We used DeepL to translate it and determine the nature of the task~\cite{website-deepl}. The assignment involved solving either Str8ts or Renban puzzles using Haskell~\cite{website-renban}. It suggested that a backtracking approach would be most appropriate and recommended starting with $6\times6$ grids without worrying about efficiency, before scaling up to larger grids.
+alanludke’s repository even includes the file \textit{Trabalho I.pdf}, which appears to be the original assignment document in Portuguese. We used DeepL to translate it and determine the task's nature~\cite {website-deepl}. The assignment involved solving either Str8ts or Renban puzzles using Haskell~\cite{website-renban}. It suggested that a backtracking approach would be most appropriate and recommended starting with $6\times6$ grids without worrying about efficiency, before scaling up to larger grids.
+
+Find all files related to this analysis at \href{https://github.com/e11720061/a-simple-str8ts-solver/tree/main/github-analysis}{/github-analysis}.
